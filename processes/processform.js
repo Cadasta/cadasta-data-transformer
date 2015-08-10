@@ -36,16 +36,19 @@ survey.processForm = function (form, callback) {
 
     createSurvey(idString, name, title, function (error, id) {
 
-        callback(survey_id);
+        survey_id = id;
 
         if (error.length === 0 && id !== null) {
-            console.log("Survey successfully created.");
+            //console.log("Survey successfully created.");
 
 
             //call recursive function
             //pass json.children & null
 
             node_handler(metadata.children,null);
+
+            DataProcessor.process_data(survey_id,formdata);
+
             //parent_handler(json,function(){
             //
             //});
@@ -57,9 +60,7 @@ survey.processForm = function (form, callback) {
 
 var node_handler = function(children,parent_id,itemDone){
 
-    forEach(children, function(child_node, index, arr){
-
-        var done = this.async();
+    children.forEach(function(child_node, index, arr){
 
         var name = child_node.name || null;
         var label = child_node.label || null;
@@ -68,7 +69,7 @@ var node_handler = function(children,parent_id,itemDone){
 
                 // create note
                 note_handler(child_node.name,child_node.label, function (section_id) {
-                    console.log('Note Section created for survey: ' + section_id);
+                    //console.log('Note Section created for survey: ' + section_id);
                     //var async = setTimeout(function(){
                     //    done();
                     //}, 500);
@@ -78,14 +79,17 @@ var node_handler = function(children,parent_id,itemDone){
             case 'group':
             case 'repeat':
                 // hand parents children
-                console.log('Group');
+                //console.log('Group');
 
+                forEach(children,function(item,index,arr){
+                    var done = this.async();
                     group_handler(done,child_node.children,parent_id, name, label);
 
+                });
 
             case 'select one':
             case 'select all that apply':
-                //console.log('select one');
+                ////console.log('select one');
                 // create question
                 get_type_id(child_node.type,function(type_id){
                     question_handler(name, label, type_id, parent_id, function (question_id) {
@@ -93,7 +97,7 @@ var node_handler = function(children,parent_id,itemDone){
                         // make sure question type has children
                         if(child_node.hasOwnProperty('children') == true) {
                             // create new option rows
-                            option_handler(done,child_node.children, question_id, name, label,
+                            option_handler(child_node.children, question_id, name, label,
                                 function (c) {
                                     //var async = setTimeout(function(){
                                     //    done();
@@ -118,22 +122,20 @@ var node_handler = function(children,parent_id,itemDone){
 
     });
 
-    DataProcessor.process_data(survey_id,formdata);
-
 };
 
 // create new survey in Cadasta DB
 var createSurvey = function (id_string, name, title, callback) {
 
-    var q1 = 'SELECT * FROM cd_create_survey(' + (id_string) + ')';
+    var q1 = 'SELECT * FROM cd_create_field_data(' + (id_string) + ')';
 
     pg.query(q1, function (error, result) {
 
-        survey_id = result[0].cd_create_survey; // save new survey id
+        survey_id = result[0].cd_create_field_data; // save new survey id
 
         var updateSurvey = [];
-        updateSurvey.push('UPDATE survey SET name = ' + name + 'where id=' + survey_id);
-        updateSurvey.push('UPDATE survey SET label = ' + title + 'where id=' + survey_id);
+        updateSurvey.push('UPDATE field_data SET name = ' + name + 'where id=' + survey_id);
+        updateSurvey.push('UPDATE field_data SET label = ' + title + 'where id=' + survey_id);
 
         //execute multiple update statements
         pg.queryArr(updateSurvey, function (error, result) {
@@ -151,7 +153,7 @@ var question_handler = function (name, label, type_id, p_group_id, callback) {
 
     var p_id = p_group_id || null;
 
-    var q = 'INSERT INTO question (survey_id, type_id, name, label,section_id,group_id) values ' +
+    var q = 'INSERT INTO question (field_data_id, type_id, name, label,section_id,group_id) values ' +
         '(' + survey_id + ',' + type_id + ',' + pg.sanitize(name) + ',' + pg.sanitize(label) + ',' + section_id + ',' + p_id + ') RETURNING id';
 
     pg.query(q, function (err, res) {
@@ -159,7 +161,15 @@ var question_handler = function (name, label, type_id, p_group_id, callback) {
             var question_id = res[0].id;
 
             if (question_id !== null) {
-                console.log('-----> NEW Question: ' + label + '(id: ' + question_id + ')');
+
+                formdata.forEach(function(v){
+                    Object.keys(v).forEach(function(q){
+                        if(q == name){
+                            console.log('Name: ' + name + " id: " + question_id);
+                        }
+                    })
+                })
+                //console.log('-----> NEW Question: ' + label + '(id: ' + question_id + ')');
 
                 //
                 //if (typeof(section_id) !== 'undefined') {
@@ -167,7 +177,7 @@ var question_handler = function (name, label, type_id, p_group_id, callback) {
                 //
                 //    pg.query(q2, function (err, res) {
                 //        if (!err) {
-                //            console.log("Question: " + question_id + " sucessfully updated");
+                //            //console.log("Question: " + question_id + " sucessfully updated");
                 //        }
                 //    });
                 //}
@@ -177,7 +187,7 @@ var question_handler = function (name, label, type_id, p_group_id, callback) {
                 //    var q3 = 'UPDATE question SET group_id = ' + p_group_id + ' WHERE id= ' + question_id;
                 //    pg.query(q3, function (err, res) {
                 //        if (!err) {
-                //            console.log("Question: " + question_id + " sucessfully updated");
+                //            //console.log("Question: " + question_id + " sucessfully updated");
                 //        }
                 //    });
                 //}
@@ -191,7 +201,7 @@ var question_handler = function (name, label, type_id, p_group_id, callback) {
 // create new Group in q_group table
 var group_handler = function (async,children,parent_id, name, label, callback) {
     if (name !== null && label !== null) {
-        var q = 'INSERT INTO q_group (survey_id,name,label,parent_id) VALUES ('
+        var q = 'INSERT INTO q_group (field_data_id,name,label,parent_id) VALUES ('
             + survey_id + ',' + pg.sanitize(name) + ',' + pg.sanitize(label) + ',' + pg.sanitize(parent_id) + ') RETURNING id';
 
         pg.queryDeferred(q)
@@ -206,14 +216,14 @@ var group_handler = function (async,children,parent_id, name, label, callback) {
         //        group_id = res[0].id;
         //
         //        callback(group_id); // send back group id
-        //        console.log('-----> NEW GROUP: ' + label + '(id: ' + group_id + ')');
+        //        //console.log('-----> NEW GROUP: ' + label + '(id: ' + group_id + ')');
         //
         //        //if (typeof(section_id) !== "undefined" && group_id !== null) {
         //        //    var q2 = 'UPDATE q_group SET section_id =' + section_id + ' WHERE id=' + group_id;
         //        //    pg.query(q2, function (err, res) {
         //        //        if (!err) {
         //        //            callback(group_id); // send back group id
-        //        //            console.log("Question group sucessfully updated");
+        //        //            //console.log("Question group sucessfully updated");
         //        //        }
         //        //    });
         //        //}
@@ -225,12 +235,12 @@ var group_handler = function (async,children,parent_id, name, label, callback) {
 
 // create new not in Section table
 var note_handler = function (name, label, callback) {
-    var q = 'INSERT INTO section(survey_id,name,label) VALUES(' + survey_id + ',' + pg.sanitize(name) + ',' + pg.sanitize(label) + ') RETURNING id';
+    var q = 'INSERT INTO section(field_data_id,name,label) VALUES(' + survey_id + ',' + pg.sanitize(name) + ',' + pg.sanitize(label) + ') RETURNING id';
     pg.query(q, function (err, res) {
         if (!err) {
             section_id = res[0].id; // save section id
             callback(section_id);
-            console.log('-----> NEW SECTION: ' + label + '(' + section_id + ')');
+            //console.log('-----> NEW SECTION: ' + label + '(' + section_id + ')');
         }
     });
 };
@@ -248,7 +258,7 @@ var get_type_id = function (type, callback) {
 };
 
 // create new option row in Option table
-var option_handler = function (done,obj, parent_question_id, name, label, callback) {
+var option_handler = function (obj, parent_question_id, name, label, callback) {
 
     // loop through options and Insert each into option table
     obj.forEach(function (c, idx) {
@@ -258,17 +268,17 @@ var option_handler = function (done,obj, parent_question_id, name, label, callba
         var q = 'INSERT INTO option (question_id, name, label) VALUES (' + parent_question_id + ',' + pg.sanitize(option_name) + ',' + pg.sanitize(option_label) + ')';
 
         pg.queryDeferred(q).then(function(){
-            console.log('NEW Option created for question: ' + parent_question_id);
+            //console.log('NEW Option created for question: ' + parent_question_id);
 
             if (idx == obj.length - 1) {
-                done();
+
             }
 
         });
 
         //pg.query(q, function (err, res) {
         //    if (!err) {
-        //        console.log('NEW Option created for question: ' + parent_question_id);
+        //        //console.log('NEW Option created for question: ' + parent_question_id);
         //
         //        if (idx == obj.length - 1) {
         //            callback(parent_question_id);

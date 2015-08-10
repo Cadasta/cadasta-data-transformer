@@ -1,21 +1,21 @@
-﻿select * from question;
-truncate table survey cascade
+﻿select * from question where id = 2235
+
+truncate table field_data cascade;
+truncate table party cascade;
 select * from q_group
 select * from section
 select * from option
 select * from type
-select * from survey
+select * from field_Data
 select * from quote_literal('')
 SELECT * from type
+select * from party
+select * from respondent
 
 SELECT id FROM type where name = $anystr$group$anystr$
 SELECT id FROM type where name = $anystr$note$anystr$
 
-select * from question where survey_id = 149
-select * from type where id = 8
+SELECT slugs.*, row_number() OVER () as rownum from regexp_split_to_table('plot_address/swag/plot_address_street', '/') as slugs order by rownum desc limit 1
+SELECT slugs.*, row_number() OVER () as rownum from regexp_split_to_table('plot_address/swag/plot_address_street', '/') as slugs order by rownum desc limit 1 offset 1
 
-SELECT * FROM cd_create_survey('test')
-
-INSERT INTO q_group (survey_id,name,label,parent_id) VALUES (178,$anystr$applicant_name$anystr$,$anystr$Name of Applicant$anystr$,null) RETURNING id
-INSERT INTO question (survey_id, type_id, name, label) values (215,8,$anystr$applicant_marital_status$anystr$,$anystr$Applicant Marital Status$anystr$) RETURNING id
-INSERT INTO option (question_id, name, label) VALUES (3608,$anystr$katechapman$anystr$,$anystr$Kate Chapman$anystr$)
+SELECT count(id) from question WHERE lower(name) = lower(' + pg.sanitize(slug) + ') and field_data_id = 7
