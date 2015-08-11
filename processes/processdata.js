@@ -7,7 +7,7 @@ data.process_data = function (field_data_id, data, callback) {
 
     data.forEach(function (res) {
         data_handler(field_data_id, res, function () {
-            console.log('Data Handler Finished....');
+            //console.log('Data Handler Finished....');
         });
     })
 };
@@ -59,10 +59,10 @@ var response_handler = function(data,field_id,respondent_id){
         var q = 'INSERT INTO response (respondent_id, question_id, text) VALUES (' + respondent_id + ',' + '(' +
             'SELECT id from question where lower(name) = ' + pg.sanitize(question_slug) + ' AND field_data_id = ' + field_id +  '),' + data[item] +')';
 
-        console.log(q);
+        //console.log(q);
 
         //getQuestionID(question_slug,id,function(id){
-        //    //console.log("label: " + question_slug +  " Question id: " + id);
+        //    ////console.log("label: " + question_slug +  " Question id: " + id);
         //});
 
     }
@@ -72,7 +72,7 @@ var getQuestionID = function (slug,data_field_id,callback){
     var q = 'SELECT id from question where lower(name) = ' + pg.sanitize(slug) + ' AND field_data_id = ' + data_field_id;
 
     pg.query(q,function(err,res){
-        //console.log(slug);
+        ////console.log(slug);
         if(res.length > 0){
             callback(parseInt(res[0].id))
         } else {

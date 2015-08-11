@@ -92,9 +92,7 @@ var dQuery = module.exports.queryDeferred = function (queryStr) {
                 //console.error('ERROR RUNNING QUERY:', queryStr, queryerr);
                 deferred.reject(queryerr);
             } else {
-
                 deferred.resolve(result && result.rows ? result.rows : result);
-
             }
 
         });
