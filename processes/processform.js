@@ -163,35 +163,6 @@ var question_handler = function (name, label, type_id, p_group_id, callback) {
 
             if (question_id !== null) {
 
-                //formdata.forEach(function(v){
-                //    Object.keys(v).forEach(function(q){
-                //        if(q == name){
-                //            console.log('Name: ' + name + " id: " + question_id);
-                //        }
-                //    })
-                //})
-                //console.log('-----> NEW Question: ' + label + '(id: ' + question_id + ')');
-
-                //
-                if (typeof(section_id) !== 'undefined') {
-                    var q2 = 'UPDATE question SET section_id = ' + section_id + ' WHERE id= ' + question_id;
-
-                    pg.query(q2, function (err, res) {
-                        if (!err) {
-                            //console.log("Question: " + question_id + " sucessfully updated");
-                        }
-                    });
-                }
-
-                //this question belongs to the child group of the parent group
-                if (typeof p_group_id !== 'undefined' && p_group_id !== null) {
-                    var q3 = 'UPDATE question SET group_id = ' + p_group_id + ' WHERE id= ' + question_id;
-                    pg.query(q3, function (err, res) {
-                        if (!err) {
-                            //console.log("Question: " + question_id + " sucessfully updated");
-                        }
-                    });
-                }
                 callback(question_id);
             }
 

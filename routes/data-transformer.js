@@ -4,15 +4,14 @@ var survey = require('../processes/processform');
 var pg = require('../pg.js'); //
 
 var survey_form = require('../data/form.js');
-var survey_data = require('../processes/processdata');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 
-  var form = pg.sanitize(JSON.stringify(survey_form.new_form.results));
+  var form = pg.sanitize(JSON.stringify(survey_form.form.results));
 
-  survey.processForm(survey_form.new_form,function(id){
+  survey.processForm(survey_form.form,function(id){
 
     var survey_id = id;
 
