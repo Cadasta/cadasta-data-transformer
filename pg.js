@@ -1,6 +1,7 @@
 var pg = require('pg');
 var Q = require("q");
-
+var events = require('events').EventEmitter.prototype._maxListeners = 1000;
+//var eventEmitter = new events.EventEmitter();
 
 var settings = require('./settings.js').pg;
 
@@ -55,6 +56,8 @@ var queryArr = module.exports.queryArr = function (queryStrArr, cb) {
     });
 };
 
+
+
 /**
  * Main query function to execute an SQL query.
  *
@@ -66,6 +69,10 @@ var query = module.exports.query = function (queryStr, cb) {
             console.error('error fetching client from pool', err);
         }
 
+        client.on('notification', function(msg){
+            console.log(msg);
+        });
+
         client.query(queryStr, function (queryerr, result) {
             done();
             if (queryerr) {
@@ -73,7 +80,6 @@ var query = module.exports.query = function (queryStr, cb) {
             }
             cb((err || queryerr), (result && result.rows ? result.rows : result));
         });
-
 
     });
 };

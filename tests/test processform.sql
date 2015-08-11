@@ -4,7 +4,7 @@ select * from raw_data
 
 alter table raw_data add column field_data_id int references field_data (id)
 
-select * from question where name like '%loan_officer%' 
+select * from question where name like '%geo%' 
 
 where name = 'loan_officer'
 select * from q_group
@@ -12,14 +12,14 @@ select * from section
 select * from option
 select * from type
 select * from field_Data order by id
-select * from question where section_id is not null
-= 54
+select * from question 
 select * from quote_literal('')
 SELECT * from type
 select * from party
+select * from parcel
+select * from relationship
 select * from respondent
-select * from response where question_id = 2864
-
+select * from response where question_id = 3634
 select * from raw_Data
 
 select * from response where question_id IN (2864,
