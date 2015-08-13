@@ -32,7 +32,7 @@ var formdata;
  *
  * Grab raw json to send to createSurvey
  */
-survey.processForm = function (form, callback) {
+survey.load = function (form, callback) {
 
     metadata = form.metadata;
     formdata = form.results;
