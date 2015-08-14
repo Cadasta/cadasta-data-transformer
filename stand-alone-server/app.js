@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var pg = require('pg');
 
-var DataTransformer = require('./../routes/data-transformer');
+var DataTransformer = require('../routes/data-transformer');
 
 var app = express();
 

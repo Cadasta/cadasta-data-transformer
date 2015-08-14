@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var survey = require('../processes/processform');
+var form = require('../processes/processform');
 var data = require('../processes/processdata');
 
 var pg = require('../pg.js'); //
@@ -15,9 +15,11 @@ router.get('/', function(req, res, next) {
   var results = pg.sanitize(JSON.stringify(survey_form.form.results));
 
   // process raw field data templates
-  survey.load(survey_form.form,function(id){
+  form.load(survey_form.form,function(id){
 
-    data.load(id,results);
+    data.load(id,results,function(res){
+      console.log(res);
+    });
 
   });
 

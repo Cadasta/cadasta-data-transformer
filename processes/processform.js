@@ -23,7 +23,6 @@ var section_id = null;
 var group_id;
 var field_data_id;
 var metadata;
-var formdata;
 
 /**
  *
@@ -35,7 +34,6 @@ var formdata;
 survey.load = function (form, callback) {
 
     metadata = form.metadata;
-    formdata = form.results;
 
     var idString = pg.sanitize(metadata.id_string);
     var name = pg.sanitize(metadata.name);
@@ -51,10 +49,8 @@ survey.load = function (form, callback) {
 
             //call recursive function
             //pass json.children & null
-
             node_handler(metadata.children,null);
 
-            //DataProcessor.process_data(field_data_id,formdata);
             callback(field_data_id);
         }
 
