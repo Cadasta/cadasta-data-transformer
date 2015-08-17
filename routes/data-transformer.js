@@ -17,6 +17,7 @@ router.get('/', function(req, res, next) {
   // process raw field data templates
   form.load(survey_form.form,function(id){
 
+    console.log("Loading in the survey response data now...")
     data.load(id,results,function(res){
       console.log(res);
     });
