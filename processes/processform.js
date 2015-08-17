@@ -82,9 +82,8 @@ survey.load = function (form, callback) {
  * Recursive function that loops through question and handles them by type
  * Function is recursively called if question is a group, using group_id as parent_id in parameter
  *
- * @param children
- * @param parent_id
- * @param itemDone
+ * @param node
+ * @param done
  */
 
 function node_handler(node, done){
@@ -286,15 +285,15 @@ var group_handler = function (node) {
     var sql = 'INSERT INTO q_group (field_data_id,name,label,parent_id) VALUES ('
         + field_data_id + ',' + pg.sanitize(node.name) + ',' + pg.sanitize(node.label) + ',' + pg.sanitize(node.parent_id) + ') RETURNING id';
 
-    pg.queryDeferred(sql)
-        .then(function(res){
+    pg.query(sql, function (err, res) {
 
-            deferred.resolve(res[0].id);
-        })
-        .catch(function(err){
+        if(err) {
             deferred.reject(err);
-        })
-        .done();
+        } else {
+            deferred.resolve(res[0].id);
+        }
+
+    });
 
     return deferred.promise;
 };
