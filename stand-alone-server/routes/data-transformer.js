@@ -9,20 +9,26 @@ var survey_form = require('../../tests/data/form.js');
 
 /* GET data-transformer route . */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
 
   // clean up form data
   var results = pg.sanitize(JSON.stringify(survey_form.form.results));
 
-  // process raw field data templates
-  form.load(survey_form.form,function(id){
+  form.load(survey_form.form)
+      .then(function(surveyId){
 
-    console.log("Loading in the survey response data now...")
-    data.load(id,results,function(res){
-      console.log(res);
-    });
+        data.load(surveyId,results,function(response){
 
-  });
+          res.send('Survey and responses loaded successfully.');
+
+        });
+      })
+      .catch(function(err){
+
+        res.send(err);
+
+      })
+      .done();
+
 
 });
 

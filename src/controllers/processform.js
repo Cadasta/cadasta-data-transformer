@@ -17,13 +17,10 @@ var Q = require("q");
 var forEach = require('async-foreach').forEach;
 
 var pg = require('./data_access.js');
-//var DataProcessor = require('../processes/processdata');
-var forEach = require('async-foreach').forEach;
 
 var survey = module.exports = {};
 
 var section_id = null;
-var group_id;
 var field_data_id;
 var metadata;
 
@@ -36,14 +33,9 @@ var metadata;
  */
 survey.load = function (form, callback) {
 
-    /**  This is the final callback after all recursion is complete
-     *
-     */
-    function allDone(notAborted, arr) {
-        console.log("Survey successfully created. id: " + field_data_id);
-        console.log("The recursive Async survey structure loading is done.");
-        callback(field_data_id);
-    }
+    var deferred = Q.defer();
+
+
 
     metadata = form.metadata;
 
@@ -51,28 +43,91 @@ survey.load = function (form, callback) {
     var name = pg.sanitize(metadata.name);
     var title = pg.sanitize(metadata.title);
 
-    createFieldData(idString, name, title, function (error, id) {
+    createFieldData(idString)
+        .then(function(response){
 
-        field_data_id = id;
-
-        if (error.length === 0 && id !== null) {
-
-
-
-            //call recursive function
-            //pass json.children & null
+            field_data_id = response;
+            return updateFieldData(name, title, field_data_id);
+        })
+        .then(function(response){
 
             var nodeZero = {children: metadata.children, parent_id: null};
 
-            node_handler(nodeZero, allDone);
+            return node_handler(nodeZero, allDone);
 
+
+        })
+        .catch(function(err){
+
+            deferred.reject(err)
+        })
+        .done();
+
+    /**  This is the final callback after all recursion is complete
+     *
+     */
+    function allDone(notAborted, arr) {
+        console.log("Survey successfully created. id: " + field_data_id);
+        console.log("The recursive Async survey structure loading is done.");
+        deferred.resolve(field_data_id)
+    }
+
+    return deferred.promise;
+};
+
+
+/**
+ *
+ * Create new field_data in Cadasta DB from raw json
+ *
+ * @param id_string
+ */
+var createFieldData = function (id_string) {
+
+    var deferred = Q.defer();
+
+    var sql= 'SELECT * FROM cd_create_field_data(' + (id_string) + ')';
+
+    pg.query(sql, function (error, result) {
+
+        if (error) {
+            deferred.reject(err);
+        } else if (!result instanceof Array|| result.length === 0 || typeof(result[0].cd_create_field_data) === "undefined") {
+
+            deferred.reject("cd_create_field_data did not return and id.");
+
+        } else {
+
+            // Return new survey id
+            deferred.resolve(result[0].cd_create_field_data);
 
         }
 
     });
 
+    return deferred.promise;
+
 };
 
+var updateFieldData = function(name, title, field_data_id){
+
+    var deferred = Q.defer();
+
+    var sql = "UPDATE field_data SET name = " + name + ", label = " + title + "where id=" + field_data_id;
+
+    pg.query(sql, function (err, res) {
+        if (err) {
+            deferred.reject(err);
+        } else {
+
+            deferred.resolve(res);
+
+        }
+    });
+
+    return deferred.promise;
+
+}
 
 /**
  *
@@ -206,38 +261,6 @@ function node_handler(node, done){
 
     }, done);
 }
-
-/**
- *
- * Create new field_data in Cadasta DB from raw json
- *
- * @param id_string
- * @param name
- * @param title
- * @param callback return field_data_id
- */
-var createFieldData = function (id_string, name, title, callback) {
-
-    var q1 = 'SELECT * FROM cd_create_field_data(' + (id_string) + ')';
-
-    pg.query(q1, function (error, result) {
-
-        field_data_id = result[0].cd_create_field_data; // save new survey id
-
-        var updateSurvey = [];
-        updateSurvey.push('UPDATE field_data SET name = ' + name + 'where id=' + field_data_id);
-        updateSurvey.push('UPDATE field_data SET label = ' + title + 'where id=' + field_data_id);
-
-        //execute multiple update statements
-        pg.queryArr(updateSurvey, function (error, result) {
-            if (result.length == 2) {
-                callback(error, field_data_id);
-            }
-        })
-
-    })
-
-};
 
 /**
  *
