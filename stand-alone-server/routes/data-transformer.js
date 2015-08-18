@@ -16,11 +16,12 @@ router.get('/', function(req, res, next) {
   form.load(survey_form.form)
       .then(function(surveyId){
 
-        data.load(surveyId,results,function(response){
+        return data.load(surveyId,results);
+      })
+      .then(function(response){
 
           res.send('Survey and responses loaded successfully.');
 
-        });
       })
       .catch(function(err){
 
