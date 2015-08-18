@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var form = require('../processes/processform');
-var data = require('../processes/processdata');
+var form = require('../../src/controllers/processform');
+var data = require('../../src/controllers/processdata');
 
-var pg = require('../pg.js'); //
+var pg = require('../../src/controllers/data_access.js'); //
 
-var survey_form = require('../data/form.js');
+var survey_form = require('../../tests/data/form.js');
 
 /* GET data-transformer route . */
 router.get('/', function(req, res, next) {

@@ -1,4 +1,4 @@
-var pg = require('data_access.js');
+var pg = require('./data_access.js');
 
 var data = module.exports = {};
 

@@ -19,13 +19,12 @@ var path = require('path');
 var fs = require('fs');
 var common = require("./../common");
 
-//TODO: Add this back in when it exists.
-var DataTransformer = require("../../index.js");
-var dataTransformer = new DataTransformer({});
 
 //Loop thru providers folder and require each, and create routes
-var app = { providers: {},  router: router };
+var app = { providers:{}, router:router };
 
+app.dataProcessor = require('../controllers/processdata.js');
+app.formProcessor = require('../controllers/processform.js');
 
 app.init = function(){
 
@@ -89,6 +88,11 @@ var buildProviderLoadRoutes = function() {
 
 
     provider.load(args.files, function (err, cjf) {
+
+
+      //Got the CJF.
+
+      //Pass along to Data Transformer
 
       res.status(200).json(result);
 

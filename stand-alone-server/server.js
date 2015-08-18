@@ -4,9 +4,17 @@ var favicon = require('serve-favicon');
 var compression = require('compression')
 var bodyParser = require('body-parser');
 
-var ingestion_engine = require('../src/ingestion/ingestion_base.js');
+var settings = require('./settings/settings.js');
+if(!settings){
+  throw new Error("missing settings/settings.js file.");
+  return;
+}
+
+var DataTransformer = require('../index.js');
+var ingestion_engine = new DataTransformer(settings).ingestion_engine;
 
 var settings = { apiPort: 3006 };
+var DTRoutes = require('../stand-alone-server/routes/data-transformer');
 
 //Register the CSV Provider
 require("cadasta-provider-csv").register(ingestion_engine);
@@ -26,6 +34,7 @@ server.use(bodyParser.urlencoded({ extended: false }));
 
 // Endpoint configuration
 server.use('/providers', ingestion_engine.router);
+server.use('/data-transformer', DTRoutes);
 
 // catch 404 and forward to error handler; Remove this?
 /*

@@ -2,20 +2,16 @@ var pg = require('pg');
 var Q = require("q");
 var events = require('events').EventEmitter.prototype._maxListeners = 1000;
 
-var settings = require('../../index.js').settings;
-
-if(!settings){
-    throw new Error("Need to set DB settings using DataTransformer.setDBSettings() method.")
-    return;
-}
 
 // PostGIS Connection String
-var conString = "postgres://" +
-    settings.user + ":" +
-    settings.password + "@" +
-    settings.server + ":" +
-    settings.port + "/" +
-    settings.database;
+//var conString = "postgres://" +
+//    settings.user + ":" +
+//    settings.password + "@" +
+//    settings.server + ":" +
+//    settings.port + "/" +
+//    settings.database;
+
+var conString = global.conString;
 
 /**
  * Main query function to execute an array of SQL queries.
@@ -117,7 +113,7 @@ var sanitize = module.exports.sanitize = function (val) {
     if (typeof val === 'string' && val !== 'null') {
         // $nh9$ is using $$ with an arbitrary tag. $$ in pg is a safe way to quote something,
         // because all escape characters are ignored inside of it.
-        var esc = settings.escapeStr;
+        var esc = global.escapeStr;
         return "$" + esc + "$" + val + "$" + esc + "$";
     }
     return val;
