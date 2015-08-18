@@ -91,7 +91,7 @@ var createFieldData = function (id_string) {
     pg.query(sql, function (error, result) {
 
         if (error) {
-            deferred.reject(err);
+            deferred.reject(error);
         } else if (!result instanceof Array|| result.length === 0 || typeof(result[0].cd_create_field_data) === "undefined") {
 
             deferred.reject("cd_create_field_data did not return and id.");
