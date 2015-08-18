@@ -74,24 +74,24 @@ survey.load = function (form, callback) {
 };
 
 
-
-
-
 /**
  *
  * Recursive function that loops through question and handles them by type
  * Function is recursively called if question is a group, using group_id as parent_id in parameter
  *
- * @param node
- * @param done
+ * @param node the current node in the survey "tree" data structure
+ * @param done function to execute once all the node's children have had the appropriate code executed upon them
  */
 
 function node_handler(node, done){
 
     forEach(node.children, function(child_node, index, arr) {
 
+        // Function that should be fired when this childnode's code is completely executed; Each node generally requires
+        // and async function (INSERTs on the DB);  When the async is complete, we fire this.
         var child_node_done = this.async();
 
+        // Make sure name and label properties are there
         child_node.name = child_node.name || null;
         child_node.label = child_node.label || null;
 
@@ -118,10 +118,11 @@ function node_handler(node, done){
             case 'group':
             case 'repeat':
 
-                // Async func - it wraps a pg_query
+                // Group handler
                 group_handler(child_node)
                     .then(function(response){
 
+                        // Groups have children, so we fire the recursive function again
                         return node_handler(child_node, child_node_done);
                     })
                     .catch(function(err){
@@ -133,25 +134,29 @@ function node_handler(node, done){
 
             case 'select one':
             case 'select all that apply':
-                ////console.log('select one');
-                // create question
 
+                // create question; need type_id first
                 get_type_id(child_node)
                     .then(function(response){
 
+                        // Now create the question
                         return question_handler(child_node, response);
 
                     })
                     .then(function(response){
-                        // make sure question type has children
+
+
+                        // These types of question usually have child options
                         if(child_node.hasOwnProperty('children') == true) {
 
+                            // Assign type "option" and a parent_id
                             child_node.children.forEach(function(childNode){
 
                                 childNode.type = "option";
                                 childNode.parent_id = response;
                             });
 
+                            // We can use the recursive function to insert these child options into the database
                             return node_handler(child_node, child_node_done);
                             // create new option rows
 
@@ -167,6 +172,7 @@ function node_handler(node, done){
                 break;
             case 'option':
 
+                // Create options
                 option_handler(child_node)
                     .then(function(response){
 
@@ -237,11 +243,8 @@ var createFieldData = function (id_string, name, title, callback) {
  *
  * Create new question in the Cadasta DB
  *
- * @param name
- * @param label
+ * @param node
  * @param type_id
- * @param p_group_id
- * @param callback question_id
  */
 var question_handler = function (node, type_id) {
 
@@ -268,13 +271,9 @@ var question_handler = function (node, type_id) {
 // create new Group in q_group table
 /**
  *
- * Creates new parent group in group table and returns the group_id as a parameter in the recursive function node_handler
+ * Creates new parent group in group table and returns the group_id
  *
- * @param children
- * @param parent_id
- * @param name
- * @param label
- * @param callback group_id as 'parent_int' in node_handler()
+ * @param node
  */
 var group_handler = function (node) {
 
@@ -302,9 +301,7 @@ var group_handler = function (node) {
  *
  * Creates new note in Cadasta DB
  *
- * @param name
- * @param label
- * @param callback section_id
+ * @param node
  */
 // create new not in Section table
 var note_handler = function (node) {
@@ -330,8 +327,7 @@ var note_handler = function (node) {
  *
  * Get question type from type table in Cadasta DB
  *
- * @param type
- * @param callback type_id
+ * @param node
  */
 // take in type and return id from type table
 var get_type_id = function (node) {
@@ -357,11 +353,7 @@ var get_type_id = function (node) {
  *
  * Create new option for questions of type 'select' in Cadasta DB
  *
- * @param obj
- * @param parent_question_id
- * @param name
- * @param label
- * @param callback
+ * @param optionNode
  */
 // create new option row in Option table
 var option_handler = function (optionNode) {
