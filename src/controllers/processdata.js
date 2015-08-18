@@ -1,4 +1,4 @@
-var pg = require('../pg.js'); //
+var pg = require('data_access.js');
 
 var data = module.exports = {};
 
@@ -9,7 +9,6 @@ var data = module.exports = {};
  * @callback db message (true or error)
  */
 data.load = function (field_data_id,form_data,callback) {
-    var async = setTimeout(function(){
         pg.query('SELECT * FROM cd_import_data_json(' + field_data_id + ',' + form_data + ')',function(err,res){
             if(!err){
                 callback(res);
@@ -17,5 +16,4 @@ data.load = function (field_data_id,form_data,callback) {
                 callback(err.message);
             }
         });
-    }, 10000)
 };

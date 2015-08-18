@@ -1,9 +1,13 @@
 var pg = require('pg');
 var Q = require("q");
 var events = require('events').EventEmitter.prototype._maxListeners = 1000;
-//var eventEmitter = new events.EventEmitter();
 
-var settings = require('./settings.js').pg;
+var settings = require('../../index.js').settings;
+
+if(!settings){
+    throw new Error("Need to set DB settings using DataTransformer.setDBSettings() method.")
+    return;
+}
 
 // PostGIS Connection String
 var conString = "postgres://" +

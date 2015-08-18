@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var pg = require('pg');
 
-var DataTransformer = require('./');
+var DataTransformer = require('./src/routes/data-transformer');
 
 var app = express();
 

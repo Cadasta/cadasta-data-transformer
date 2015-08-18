@@ -1,6 +1,8 @@
 
 settings.js
 
+node_modules/
+
 .idea/.name
 
 *.iml

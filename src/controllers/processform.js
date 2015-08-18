@@ -13,7 +13,10 @@
  *
  */
 
-var pg = require('../pg.js'); //
+var Q = require("q");
+var forEach = require('async-foreach').forEach;
+
+var pg = require('./data_access.js');
 //var DataProcessor = require('../processes/processdata');
 var forEach = require('async-foreach').forEach;
 
@@ -33,6 +36,15 @@ var metadata;
  */
 survey.load = function (form, callback) {
 
+    /**  This is the final callback after all recursion is complete
+     *
+     */
+    function allDone(notAborted, arr) {
+        console.log("Survey successfully created. id: " + field_data_id);
+        console.log("The recursive Async survey structure loading is done.");
+        callback(field_data_id);
+    }
+
     metadata = form.metadata;
 
     var idString = pg.sanitize(metadata.id_string);
@@ -44,88 +56,156 @@ survey.load = function (form, callback) {
         field_data_id = id;
 
         if (error.length === 0 && id !== null) {
-            console.log("Survey successfully created. id: " + field_data_id);
+
 
 
             //call recursive function
             //pass json.children & null
-            node_handler(metadata.children,null);
 
-            callback(field_data_id);
+            var nodeZero = {children: metadata.children, parent_id: null};
+
+            node_handler(nodeZero, allDone);
+
+
         }
 
     });
 
 };
+
 
 /**
  *
  * Recursive function that loops through question and handles them by type
  * Function is recursively called if question is a group, using group_id as parent_id in parameter
  *
- * @param children
- * @param parent_id
- * @param itemDone
+ * @param node the current node in the survey "tree" data structure
+ * @param done function to execute once all the node's children have had the appropriate code executed upon them
  */
-var node_handler = function(children,parent_id,itemDone){
 
-    children.forEach(function(child_node, index){
+function node_handler(node, done){
 
-        var name = child_node.name || null;
-        var label = child_node.label || null;
+    forEach(node.children, function(child_node, index, arr) {
+
+        // Function that should be fired when this childnode's code is completely executed; Each node generally requires
+        // and async function (INSERTs on the DB);  When the async is complete, we fire this.
+        var child_node_done = this.async();
+
+        // Make sure name and label properties are there
+        child_node.name = child_node.name || null;
+        child_node.label = child_node.label || null;
+
         switch (child_node.type) {
             case 'note':
 
                 // create note
-                note_handler(child_node.name,child_node.label, function (section_id) {
-                    //console.log('Note Section created for survey: ' + section_id);
+                note_handler(child_node)
+                    .then(function(response){
 
-                });
+                        // Re-assign section_id value
+                        section_id = response;
+                        // Console.log("Created section id:", response);
+                        child_node_done();
+                        return;
+                    })
+                    .catch(function(err){
+                        throw new Error(err);
+                    })
+                    .done();
 
                 break;
+
             case 'group':
             case 'repeat':
-                // hand parents children
-                //console.log('Group');
 
-                //forEach(children,function(item,index,arr){
-                //    var done = this.async();
-                    group_handler(child_node.children,parent_id, name, label);
+                // Group handler
+                group_handler(child_node)
+                    .then(function(response){
 
-                //});
+                        // Groups have children, so we fire the recursive function again
+                        return node_handler(child_node, child_node_done);
+                    })
+                    .catch(function(err){
+                        throw new Error(err);
+                    })
+                    .done();
+
+                break;
 
             case 'select one':
             case 'select all that apply':
-                ////console.log('select one');
-                // create question
-                get_type_id(child_node.type,function(type_id){
-                    question_handler(name, label, type_id, parent_id, function (question_id) {
 
-                        // make sure question type has children
+                // create question; need type_id first
+                get_type_id(child_node)
+                    .then(function(response){
+
+                        // Now create the question
+                        return question_handler(child_node, response);
+
+                    })
+                    .then(function(response){
+
+
+                        // These types of question usually have child options
                         if(child_node.hasOwnProperty('children') == true) {
+
+                            // Assign type "option" and a parent_id
+                            child_node.children.forEach(function(childNode){
+
+                                childNode.type = "option";
+                                childNode.parent_id = response;
+                            });
+
+                            // We can use the recursive function to insert these child options into the database
+                            return node_handler(child_node, child_node_done);
                             // create new option rows
-                            option_handler(child_node.children, question_id, name, label,
-                                function (c) {
 
-                                });
+                        } else {
+                            return child_node_done();
                         }
+                    })
+                    .catch(function(err){
+                        throw new Error(err);
+                    })
+                    .done();
 
-                    });
-                });
                 break;
-            default:
-                // handle normal question types; these types do not have children, therefore a new question row is created
-                get_type_id(child_node.type,function(type_id){
-                    question_handler(name, label, type_id, parent_id, function (question_id) {
+            case 'option':
 
-                    });
-                })
+                // Create options
+                option_handler(child_node)
+                    .then(function(response){
+
+                        return child_node_done();
+                    })
+                    .catch(function(err){
+                        throw new Error(err);
+                    })
+                    .done();
+
+                break;
+
+            default:
+
+                // handle normal question types; these types do not have children, therefore a new question row is created
+                get_type_id(child_node)
+                    .then(function(response){
+
+                        return question_handler(child_node, response);
+
+                    })
+                    .then(function(response){
+                        return child_node_done();
+                    })
+                    .catch(function(err){
+                        throw new Error(err);
+                    })
+                    .done();
 
         }
 
-    });
-
-};
+    }, done);
+}
 
 /**
  *
@@ -163,156 +243,140 @@ var createFieldData = function (id_string, name, title, callback) {
  *
  * Create new question in the Cadasta DB
  *
- * @param name
- * @param label
+ * @param node
  * @param type_id
- * @param p_group_id
- * @param callback question_id
  */
-var question_handler = function (name, label, type_id, p_group_id, callback) {
+var question_handler = function (node, type_id) {
 
-    var p_id = p_group_id || null;
+    var deferred = Q.defer();
 
-    var q = 'INSERT INTO question (field_data_id, type_id, name, label,section_id,group_id) values ' +
-        '(' + field_data_id + ',' + type_id + ',' + pg.sanitize(name) + ',' + pg.sanitize(label) + ',' + section_id + ',' + p_id + ') RETURNING id';
+    var p_id = node.parent_id || null;
 
-    pg.query(q, function (err, res) {
-        if (!err) {
-            var question_id = res[0].id;
+    var sql = 'INSERT INTO question (field_data_id, type_id, name, label,section_id,group_id) values ' +
+        '(' + field_data_id + ',' + type_id + ',' + pg.sanitize(node.name) + ',' + pg.sanitize(node.label) + ',' + section_id + ',' + p_id + ') RETURNING id';
 
-            if (question_id !== null) {
+    pg.query(sql, function (err, res) {
+        if (err) {
+            deferred.reject(err);
+        } else {
 
-                callback(question_id);
-            }
+            deferred.resolve(res[0].id);
 
         }
     });
+
+    return deferred.promise;
 };
 
 // create new Group in q_group table
 /**
  *
- * Creates new parent group in group table and returns the group_id as a parameter in the recursive function node_handler
+ * Creates new parent group in group table and returns the group_id
  *
- * @param children
- * @param parent_id
- * @param name
- * @param label
- * @param callback group_id as 'parent_int' in node_handler()
+ * @param node
  */
-var group_handler = function (children,parent_id, name, label, callback) {
-    if (name !== null && label !== null) {
-        var q = 'INSERT INTO q_group (field_data_id,name,label,parent_id) VALUES ('
-            + field_data_id + ',' + pg.sanitize(name) + ',' + pg.sanitize(label) + ',' + pg.sanitize(parent_id) + ') RETURNING id';
+var group_handler = function (node) {
 
-        pg.queryDeferred(q)
-            .then(function(res){
-                group_id = res[0].id;
-                node_handler(children,group_id);
-            })
-            .catch()
-            .done();
+    var deferred = Q.defer();
 
-        //pg.query(q, function (err, res) {
-        //    if (!err) {
-        //        group_id = res[0].id;
-        //
-        //        callback(group_id); // send back group id
-        //        //console.log('-----> NEW GROUP: ' + label + '(id: ' + group_id + ')');
-        //
-        //        //if (typeof(section_id) !== "undefined" && group_id !== null) {
-        //        //    var q2 = 'UPDATE q_group SET section_id =' + section_id + ' WHERE id=' + group_id;
-        //        //    pg.query(q2, function (err, res) {
-        //        //        if (!err) {
-        //        //            callback(group_id); // send back group id
-        //        //            //console.log("Question group sucessfully updated");
-        //        //        }
-        //        //    });
-        //        //}
-        //    }
-        //});
-    }
+    node.parent_id = node.parent_id || null;
 
+    var sql = 'INSERT INTO q_group (field_data_id,name,label,parent_id) VALUES ('
+        + field_data_id + ',' + pg.sanitize(node.name) + ',' + pg.sanitize(node.label) + ',' + pg.sanitize(node.parent_id) + ') RETURNING id';
+
+    pg.query(sql, function (err, res) {
+
+        if(err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(res[0].id);
+        }
+
+    });
+
+    return deferred.promise;
 };
 
 /**
  *
  * Creates new note in Cadasta DB
  *
- * @param name
- * @param label
- * @param callback section_id
+ * @param node
  */
 // create new not in Section table
-var note_handler = function (name, label, callback) {
-    var q = 'INSERT INTO section(field_data_id,name,label) VALUES(' + field_data_id + ',' + pg.sanitize(name) + ',' + pg.sanitize(label) + ') RETURNING id';
-    pg.query(q, function (err, res) {
-        if (!err) {
-            section_id = res[0].id; // save section id
-            callback(section_id);
-            //console.log('-----> NEW SECTION: ' + label + '(' + section_id + ')');
+var note_handler = function (node) {
+
+    var deferred = Q.defer();
+
+    var sql = 'INSERT INTO section(field_data_id,name,label) VALUES(' + field_data_id + ',' + pg.sanitize(node.name) + ',' + pg.sanitize(node.label) + ') RETURNING id';
+
+    pg.query(sql, function (err, res) {
+
+        if(err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(section_id);
         }
+
     });
+
+    return deferred.promise;
 };
 
 /**
  *
  * Get question type from type table in Cadasta DB
  *
- * @param type
- * @param callback type_id
+ * @param node
  */
 // take in type and return id from type table
-var get_type_id = function (type, callback) {
+var get_type_id = function (node) {
 
-    var q = 'SELECT id FROM type where name = ' + pg.sanitize(type);
+    var deferred = Q.defer();
 
-    pg.query(q, function (err, res) {
-        if (!err && res.length > 0) {
-            callback(res[0].id);
+    var sql = 'SELECT id FROM type where name = ' + pg.sanitize(node.type);
+
+    pg.query(sql, function (err, res) {
+
+        if(err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(res[0].id);
         }
-    })
+
+    });
+
+    return deferred.promise;
 };
 
 /**
  *
  * Create new option for questions of type 'select' in Cadasta DB
  *
- * @param obj
- * @param parent_question_id
- * @param name
- * @param label
- * @param callback
+ * @param optionNode
  */
 // create new option row in Option table
-var option_handler = function (obj, parent_question_id, name, label, callback) {
+var option_handler = function (optionNode) {
 
-    // loop through options and Insert each into option table
-    obj.forEach(function (c, idx) {
-        var option_label = c.label || '';
-        var option_name = c.name;
+    var deferred = Q.defer();
 
-        var q = 'INSERT INTO option (question_id, name, label) VALUES (' + parent_question_id + ',' + pg.sanitize(option_name) + ',' + pg.sanitize(option_label) + ')';
+    optionNode.label = optionNode.label || '';
 
-        pg.queryDeferred(q).then(function(){
-            //console.log('NEW Option created for question: ' + parent_question_id);
+    var sql = 'INSERT INTO option (question_id, name, label) VALUES ('
+        + optionNode.parent_id + ','
+        + pg.sanitize(optionNode.name) + ','
+        + pg.sanitize(optionNode.label) + ')';
 
-            if (idx == obj.length - 1) {
+    pg.query(sql, function (err, res) {
 
-            }
-
-        });
-
-        //pg.query(q, function (err, res) {
-        //    if (!err) {
-        //        //console.log('NEW Option created for question: ' + parent_question_id);
-        //
-        //        if (idx == obj.length - 1) {
-        //            callback(parent_question_id);
-        //        }
-        //    }
-        //})
-
+        if(err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(true);
+        }
 
     });
+
+    return deferred.promise;
+
 };
