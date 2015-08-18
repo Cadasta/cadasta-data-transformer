@@ -30,7 +30,7 @@ server.use(compression());
 
 // Body parser
 server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.urlencoded({ extended: true }));
 
 // Endpoint configuration
 server.use('/providers', ingestion_engine.router);

@@ -9,7 +9,6 @@ var DataTransformer = function(settings){
     return;
   }
 
-  //DataTransformer.settings = settings;
   //PostGres Connection String
   global.conString = "postgres://" + settings.pg.user + ":" + settings.pg.password + "@" + settings.pg.server + ":" + settings.pg.port + "/" + settings.pg.database;
   global.escapeStr = settings.pg.escapeStr;

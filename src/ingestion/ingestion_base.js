@@ -18,13 +18,15 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 var common = require("./../common");
-
+var multiparty = require('multiparty');
 
 //Loop thru providers folder and require each, and create routes
 var app = { providers:{}, router:router };
 
 app.dataProcessor = require('../controllers/processdata.js');
 app.formProcessor = require('../controllers/processform.js');
+app.data_access = require('../controllers/data_access.js');
+
 
 app.init = function(){
 
@@ -66,7 +68,7 @@ var buildProviderRoutes = function() {
  */
 var buildProviderLoadRoutes = function() {
 
-  router.get('/:provider/load', function (req, res, next) {
+  router.post('/:provider/load', function (req, res, next) {
 
     //Get the tokenized provider from the route and make sure it exists.
     //If we're all good, then try to fire the 'fetch' method for the provider
@@ -77,25 +79,38 @@ var buildProviderLoadRoutes = function() {
       return;
     }
 
-    //Get args, regardless of GET or POST
-    var args = common.getArguments(req);
+    var form = new multiparty.Form();
+    var parsedFile;
 
-    //Next, check for a dataset.  We need a dataset to load.
-    if (!args.files) {
-      res.status(200).json({status: "Load command must include a data parameter with a dataset to load."});
-      return;
-    }
+    form.parse(req, function(err, fields, files) {
+
+      var file = files.csvupload;
+
+      //Next, check for a dataset.  We need a dataset to load.
+      if (!file || !file[0]) {
+        res.status(200).json({status: "Load command must include a 'csvupload' parameter with a dataset to be loaded."});
+        return;
+      }
 
 
-    provider.load(args.files, function (err, cjf) {
+      provider.load(file[0].path, function (err, cjf) {
 
 
-      //Got the CJF.
+        //Got the CJF.
+        var results = app.data_access.sanitize(JSON.stringify(cjf.data));
 
-      //Pass along to Data Transformer
+        //Pass along to Data Transformer
+        app.dataProcessor.load(11,results).then(function(surveyId){
 
-      res.status(200).json(result);
+             res.status(200).json({ "status": "Data Loaded."});
 
+        }).done();
+
+      });
+
+      //resp.end(util.inspect({fields:fields, files:files}));
+      //parsedFile = parseCsv(files.upload[0].path);
+      //console.log(parsedFile);
     });
 
   });
@@ -116,12 +131,6 @@ var buildProviderIndexRoute = function(){
 
 }
 
-
-router.get('/data-transformer', function(req, res, next) {
-
-  res.status(200).json({providers: Object.keys(app.providers)});
-
-});
 
 
 //Initialize routes
