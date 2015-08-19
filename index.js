@@ -12,15 +12,13 @@ var DataTransformer = function(settings){
     return;
   }
 
-  // Copy the "instance" settings to the module settings.  This is at least a little weird because we are in a constructor function and moduleSettings is a singleton
-  moduleSettings.pg = settings.pg;
+  for(var i in settings){
 
-  //DataTransformer.settings = settings;
-  //PostGres Connection String
-  //global.conString = "postgres://" + settings.pg.user + ":" + settings.pg.password + "@" + settings.pg.server + ":" + settings.pg.port + "/" + settings.pg.database;
-  //global.escapeStr = settings.pg.escapeStr;
+    moduleSettings[i] = settings[i];
+  }
 
-  this.ingestion_engine = require('./src/ingestion/ingestion_base.js');
+  return require('./src/ingestion/ingestion_base.js');
+
 };
 
 module.exports = DataTransformer;
