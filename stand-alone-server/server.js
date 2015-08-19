@@ -5,6 +5,7 @@ var compression = require('compression')
 var bodyParser = require('body-parser');
 
 var settings = require('./settings/settings.js');
+
 if(!settings){
   throw new Error("missing settings/settings.js file.");
   return;
