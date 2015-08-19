@@ -86,7 +86,7 @@ var createFieldData = function (id_string) {
 
     var deferred = Q.defer();
 
-    var sql= 'SELECT * FROM cd_create_field_data(' + (id_string) + ')';
+    var sql= 'SELECT * FROM cd_create_field_data(' + id_string + ')';
 
     pg.query(sql, function (error, result) {
 

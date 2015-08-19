@@ -5,13 +5,14 @@ var compression = require('compression')
 var bodyParser = require('body-parser');
 
 var settings = require('./settings/settings.js');
+
 if(!settings){
   throw new Error("missing settings/settings.js file.");
   return;
 }
 
 var DataTransformer = require('../index.js');
-var ingestion_engine = new DataTransformer(settings).ingestion_engine;
+var ingestion_engine = DataTransformer(settings);
 
 var settings = { apiPort: 3006 };
 var DTRoutes = require('../stand-alone-server/routes/data-transformer');
