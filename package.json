@@ -11,7 +11,7 @@
     "pg": "~4.4.0",
     "q": "^1.4.1",
     "throw.js": "^1.0.0",
-    "cadasta-provider-csv": "git://github.com/Cadasta/cadasta-provider-csv.git"
+    "cadasta-provider-csv": "https://github.com/Cadasta/cadasta-provider-csv/tarball/master"
   },
   "devDependencies": {
     "jade": "~1.11.0",
