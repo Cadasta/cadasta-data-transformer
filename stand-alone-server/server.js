@@ -20,6 +20,9 @@ var DTRoutes = require('../stand-alone-server/routes/data-transformer');
 //Register the CSV Provider
 require("cadasta-provider-csv").register(ingestion_engine);
 
+//Register the GeoJSON Provider
+require("cadasta-provider-geojson").register(ingestion_engine);
+
 // Create the express instance
 var server = express();
 
@@ -31,7 +34,7 @@ server.use(compression());
 
 // Body parser
 server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.urlencoded({ extended: true }));
 
 // Endpoint configuration
 server.use('/providers', ingestion_engine.router);
