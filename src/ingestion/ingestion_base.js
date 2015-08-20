@@ -84,11 +84,11 @@ var buildProviderLoadRoutes = function() {
 
     form.parse(req, function(err, fields, files) {
 
-      var file = files.csvupload;
+      var file = files.file_upload;
 
       //Next, check for a dataset.  We need a dataset to load.
       if (!file || !file[0]) {
-        res.status(200).json({status: "Load command must include a 'csvupload' parameter with a dataset to be loaded."});
+        res.status(200).json({status: "Load command must include a 'file_upload' parameter with a dataset to be loaded."});
         return;
       }
 
