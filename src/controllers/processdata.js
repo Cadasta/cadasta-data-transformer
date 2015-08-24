@@ -7,10 +7,17 @@ var data = module.exports = {};
  * @param form_data
  */
 data.load = function (form_data) {
+
+    var deferred = Q.defer();
+
     getFieldDataId()
         .then(function(field_data_id){
             return loadFieldData(field_data_id,form_data);
-        })
+        }).then(function(response){
+            deferred.resolve(response);
+        });
+
+    return deferred.promise;
 };
 
 /**
