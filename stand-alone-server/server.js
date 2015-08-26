@@ -23,6 +23,9 @@ require("cadasta-provider-csv").register(ingestion_engine);
 //Register the GeoJSON Provider
 require("cadasta-provider-geojson").register(ingestion_engine);
 
+//Register the ONA-data Provider
+require("cadasta-provider-ona").register(ingestion_engine);
+
 // Create the express instance
 var server = express();
 
