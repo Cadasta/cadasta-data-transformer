@@ -95,12 +95,11 @@ var buildProviderLoadRoutes = function() {
 
       provider.load(file[0].path, function (err, cjf) {
 
-
         //Got the CJF.
         var results = app.data_access.sanitize(JSON.stringify(cjf.data));
 
         //Pass along to Data Transformer
-        app.dataProcessor.load(11,results).then(function(surveyId){
+        app.dataProcessor.load(results).then(function(surveyId){
 
              res.status(200).json({ "status": "Data Loaded."});
 

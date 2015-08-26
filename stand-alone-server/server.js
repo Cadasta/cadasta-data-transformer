@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var compression = require('compression')
 var bodyParser = require('body-parser');
 
-var settings = require('./settings/settings.js');
+var settings = require('../settings.js');
 
 if(!settings){
   throw new Error("missing settings/settings.js file.");

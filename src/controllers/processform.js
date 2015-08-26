@@ -177,6 +177,13 @@ function node_handler(node, done){
                 group_handler(child_node)
                     .then(function(response){
 
+                        // Save parent ID for children of group
+                        if(child_node.hasOwnProperty('children') == true) {
+                            child_node.children.forEach(function (childNode) {
+                                childNode.parent_id = response;
+                            });
+                        }
+
                         // Groups have children, so we fire the recursive function again
                         return node_handler(child_node, child_node_done);
                     })

@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
   form.load(survey_form.form)
       .then(function(surveyId){
 
-        return data.load(surveyId,results);
+        return data.load(results);
       })
       .then(function(response){
 
