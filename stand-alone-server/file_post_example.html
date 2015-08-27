@@ -3,21 +3,21 @@
     <title>CSV Upload Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 </head>
 <body>
 <div>
     <span>CSV Test</span>
-    <form action="http://localhost:3006/providers/csv/load" method="POST" enctype="multipart/form-data">
+    <form id="CSV_Form" action="." method="POST" enctype="multipart/form-data">
         <input type="file" name="file_upload">
         <button type="submit" class="btn">Submit</button>
     </form>
 
 </div>
 
-
 <div>
     <span>GeoJSON Test</span>
-    <form action="http://localhost:3006/providers/geojson/load" method="POST" enctype="multipart/form-data">
+    <form id="GEOJSON_Form" action="." method="POST" enctype="multipart/form-data">
         <input type="file" name="file_upload">
         <button type="submit" class="btn">Submit</button>
     </form>
@@ -25,11 +25,55 @@
 
 <div>
     <span>ONA Test</span>
-    <form action="http://localhost:3006/providers/ona/load" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file_upload">
+    <form action="." method="POST" enctype="multipart/form-data">
+        <input id="ONA_Form" type="file" name="file_upload">
         <button type="submit" class="btn">Submit</button>
     </form>
 </div>
+
+<script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            $('#CSV_Form').submit(function (e) {
+                $.ajax({
+                    url: 'http://54.69.121.180:3000/providers/csv/load',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false
+                });
+                e.preventDefault();
+            });
+
+
+            $('#GEOJSON_Form').submit(function (e) {
+                $.ajax({
+                    url: 'http://54.69.121.180:3000/providers/geojson/load',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false
+                });
+                e.preventDefault();
+            });
+
+
+            $('#ONA_Form').submit(function (e) {
+                $.ajax({
+                    url: 'http://54.69.121.180:3000/providers/ona/load',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false
+                });
+                e.preventDefault();
+            });
+
+        });
+
+</script>
 
 </body>
 </html>
