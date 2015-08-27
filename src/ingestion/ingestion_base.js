@@ -69,7 +69,7 @@ var buildProviderRoutes = function() {
 var buildProviderLoadRoutes = function() {
 
   /**
-   * @api {post} /providers/:provider Upload data in a "provider-defined" format
+   * @api {post} /providers/:provider/load Upload data in a "provider-defined" format
    * @apiName PostFileToProvider
    * @apiGroup Providers
    *
