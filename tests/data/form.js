@@ -225,8 +225,8 @@ survey.form = {
             "label": "How did you acquire the land?",
             "type": "select one",
             "children": [{"name": "freehold", "label": "Freehold"}, {
-                "name": "lease",
-                "label": "Lease"
+                "name": "own",
+                "label": "Own"
             }, {"name": "inheritance", "label": "Inheritance"}, {"name": "gift", "label": "Gift"}, {
                 "name": "other",
                 "label": "Other"
