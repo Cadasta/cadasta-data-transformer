@@ -74,8 +74,8 @@ var buildProviderLoadRoutes = function() {
    * @apiGroup Providers
    *
    * @apiParam {String} provider name/type of provider, e.g. csv
-   * @apiParam {Object} post-data the POST data
-   * @apiParam {file} file_upload the data file uploaded
+   * @apiParam {Object} postdata the POST data
+   * @apiParam {file} postdata.file_upload the data file uploaded
    *
    * @apiSuccess {String} status message noting that the data is loaded
    *
