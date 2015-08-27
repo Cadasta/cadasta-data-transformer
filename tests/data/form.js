@@ -225,8 +225,8 @@ survey.form = {
             "label": "How did you acquire the land?",
             "type": "select one",
             "children": [{"name": "freehold", "label": "Freehold"}, {
-                "name": "own",
-                "label": "Own"
+                "name": "lease",
+                "label": "Lease"
             }, {"name": "inheritance", "label": "Inheritance"}, {"name": "gift", "label": "Gift"}, {
                 "name": "other",
                 "label": "Other"
@@ -304,7 +304,7 @@ survey.form = {
         ]},
         "seller_address/seller_address_street": "Oriental Drive",
         "plot_address/plot_address_city": "Long Island",
-        "proprietorship": "lease",
+        "proprietorship": "own",
         "_id": 3348588
     },{
         "_notes": [],
