@@ -68,6 +68,25 @@ var buildProviderRoutes = function() {
  */
 var buildProviderLoadRoutes = function() {
 
+  /**
+   * @api {post} /providers/:provider/load Upload data in a "provider-defined" format
+   * @apiName PostFileToProvider
+   * @apiGroup Providers
+   *
+   * @apiParam {String} provider name/type of provider, e.g. csv
+   * @apiParam {Object} postdata the POST data
+   * @apiParam {file} postdata.file_upload the data file uploaded
+   *
+   * @apiSuccess {String} status message noting that the data is loaded
+   *
+   * @apiExample {curl} Example usage:
+   *     curl -i http://localhost/providers/csv
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *
+   *     { "status": "Data Loaded." }
+   */
   router.post('/:provider/load', function (req, res, next) {
 
     //Get the tokenized provider from the route and make sure it exists.
@@ -118,10 +137,26 @@ var buildProviderLoadRoutes = function() {
 
 
 /***
- * Create a list (index) for each provider found in the providers folde
+ * Create a list (index) for each provider found in the providers folder
  */
 var buildProviderIndexRoute = function(){
 
+  /**
+   * @api {post} /providers Show list of all providers
+   * @apiName GetProviders
+   * @apiGroup Providers
+   *
+   *
+   * @apiSuccess {String} providers list of available providers
+   *
+   * @apiExample {curl} Example usage:
+   *     curl -i http://localhost/providers
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *
+   *     { "providers": "csv" }
+   */
   router.get('/', function(req, res, next) {
 
     res.status(200).json({providers: Object.keys(app.providers)});
