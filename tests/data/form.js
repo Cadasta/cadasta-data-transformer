@@ -304,7 +304,7 @@ survey.form = {
         ]},
         "seller_address/seller_address_street": "Oriental Drive",
         "plot_address/plot_address_city": "Long Island",
-        "proprietorship": "lease",
+        "proprietorship": "freehold",
         "_id": 3348588
     },{
         "_notes": [],
