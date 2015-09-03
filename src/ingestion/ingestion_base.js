@@ -69,10 +69,10 @@ var buildProviderRoutes = function() {
 var buildProviderLoadRoutes = function() {
 
   /**
-   * @api {post} /providers/:provider/load Upload data in a "provider-defined" format
+   * @api {post} /providers/:provider/load Upload data
    * @apiName PostFileToProvider
    * @apiGroup Providers
-   *
+   * @apiDescription Upload data in a "provider-defined" format
    * @apiParam {String} provider name/type of provider, e.g. csv
    * @apiParam {Object} postdata the POST data
    * @apiParam {file} postdata.file_upload the data file uploaded
@@ -80,7 +80,7 @@ var buildProviderLoadRoutes = function() {
    * @apiSuccess {String} status message noting that the data is loaded
    *
    * @apiExample {curl} Example usage:
-   *     curl -i http://localhost/providers/csv
+   *     curl -i http://localhost/providers/csv/load
    *
    * @apiSuccessExample {json} Success-Response:
    *     HTTP/1.1 200 OK
@@ -147,7 +147,7 @@ var buildProviderIndexRoute = function(){
    * @apiGroup Providers
    *
    *
-   * @apiSuccess {String} providers list of available providers
+   * @apiSuccess {String[]} providers list of available providers
    *
    * @apiExample {curl} Example usage:
    *     curl -i http://localhost/providers
@@ -155,7 +155,7 @@ var buildProviderIndexRoute = function(){
    * @apiSuccessExample {json} Success-Response:
    *     HTTP/1.1 200 OK
    *
-   *     { "providers": "csv" }
+   *     { "providers": ["csv"] }
    */
   router.get('/', function(req, res, next) {
 
