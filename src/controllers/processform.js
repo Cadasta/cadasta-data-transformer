@@ -44,17 +44,22 @@ survey.load = function (form, callback) {
     var title = pg.sanitize(metadata.title);
 
     createFieldData(idString)
-        .then(function(response){
+        .then(function(response) {
 
             field_data_id = response;
-            return updateFieldData(name, title, field_data_id);
+
+            return getProjectID();
+
+        }).then(function(response){
+            var project_id = response;
+
+            return updateFieldData(name, title, field_data_id, project_id);
         })
         .then(function(response){
 
             var nodeZero = {children: metadata.children, parent_id: null};
 
             return node_handler(nodeZero, allDone);
-
 
         })
         .catch(function(err){
@@ -75,6 +80,35 @@ survey.load = function (form, callback) {
     return deferred.promise;
 };
 
+/**
+ * Get project id from db
+ * //TODO Once CKAN wraps their API around ours; we can ask user for project ID
+ * @returns {*|promise}
+ */
+var getProjectID = function () {
+
+    var deferred = Q.defer();
+
+    var sql= "SELECT id FROM project WHERE ckan_id = 'demo-project'";
+
+    pg.query(sql, function (error, result) {
+
+        if (error) {
+            deferred.reject(error);
+        } else if (!result instanceof Array|| result.length === 0 || typeof(result[0].id) === "undefined") {
+
+            deferred.reject("Cannot find project ckan_id: demo-project");
+
+        } else {
+
+            // Return new survey id
+            deferred.resolve(result[0].id);
+        }
+
+    });
+
+    return deferred.promise;
+};
 
 /**
  *
@@ -109,11 +143,11 @@ var createFieldData = function (id_string) {
 
 };
 
-var updateFieldData = function(name, title, field_data_id){
+var updateFieldData = function(name, title, field_data_id, project_id){
 
     var deferred = Q.defer();
 
-    var sql = "UPDATE field_data SET name = " + name + ", label = " + title + "where id=" + field_data_id;
+    var sql = "UPDATE field_data SET project_id = " + project_id + ", name = " + name + ", label = " + title + "where id=" + field_data_id;
 
     pg.query(sql, function (err, res) {
         if (err) {
@@ -127,7 +161,7 @@ var updateFieldData = function(name, title, field_data_id){
 
     return deferred.promise;
 
-}
+};
 
 /**
  *
