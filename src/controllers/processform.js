@@ -89,7 +89,7 @@ var getProjectID = function () {
 
     var deferred = Q.defer();
 
-    var sql= "SELECT id FROM project WHERE ckan_id = 'demo-project'";
+    var sql= "SELECT id FROM project WHERE ckan_id LIKE '%demo_project%'";
 
     pg.query(sql, function (error, result) {
 
