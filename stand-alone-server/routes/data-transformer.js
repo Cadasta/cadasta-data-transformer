@@ -13,18 +13,13 @@ var survey = require('../../tests/data/cjf-min.json');
 router.get('/', function(req, res, next) {
 
   // clean up form data
-  var results = pg.sanitize(JSON.stringify(survey.data));
+  //var cjfdata = pg.sanitize(JSON.stringify(survey.data));
 
   form.load(survey.form)
-      .then(function(surveyId){
-
-        return data.load(results);
+      .then(function(field_data_id){
+          res.send('Survey: ' + field_data_id +  ' loaded successfully.');
       })
-      .then(function(response){
 
-          res.send('Survey and responses loaded successfully.');
-
-      })
       .catch(function(err){
 
         res.send(err);

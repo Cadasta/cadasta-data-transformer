@@ -23,6 +23,7 @@ var survey = module.exports = {};
 var section_id = null;
 var field_data_id;
 var metadata;
+var form;
 
 /**
  *
@@ -31,17 +32,17 @@ var metadata;
  *
  * Grab raw json to send to createSurvey
  */
-survey.load = function (form, callback) {
+survey.load = function (cjf, callback) {
 
     var deferred = Q.defer();
 
-
+    form = cjf;
 
     //metadata = form.metadata;
 
-    var idString = pg.sanitize(form.id_string);
-    var name = pg.sanitize(form.name);
-    var title = pg.sanitize(form.title);
+    var idString = pg.sanitize(cjf.id_string);
+    var name = pg.sanitize(cjf.name);
+    var title = pg.sanitize(cjf.title);
 
     createFieldData(idString)
         .then(function(response) {
@@ -57,7 +58,7 @@ survey.load = function (form, callback) {
         })
         .then(function(response){
 
-            var nodeZero = {children: metadata.children, parent_id: null};
+            var nodeZero = {children: form.children, parent_id: null};
 
             return node_handler(nodeZero, allDone);
 
@@ -72,8 +73,8 @@ survey.load = function (form, callback) {
      *
      */
     function allDone(notAborted, arr) {
-        console.log("Survey successfully created. id: " + field_data_id);
-        console.log("The recursive Async survey structure loading is done.");
+        //console.log("Survey successfully created. id: " + field_data_id);
+        //console.log("The recursive Async survey structure loading is done.");
         deferred.resolve(field_data_id)
     }
 
