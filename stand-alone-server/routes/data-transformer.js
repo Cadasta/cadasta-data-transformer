@@ -5,15 +5,17 @@ var data = require('../../src/controllers/processdata');
 
 var pg = require('../../src/controllers/data_access.js'); //
 
-var survey_form = require('../../tests/data/form.js');
+//var survey_form = require('../../tests/data/form.js');
+
+var survey = require('../../tests/data/cjf-min.json');
 
 /* GET data-transformer route . */
 router.get('/', function(req, res, next) {
 
   // clean up form data
-  var results = pg.sanitize(JSON.stringify(survey_form.form.results));
+  var results = pg.sanitize(JSON.stringify(survey.data));
 
-  form.load(survey_form.form)
+  form.load(survey.form)
       .then(function(surveyId){
 
         return data.load(results);

@@ -37,11 +37,11 @@ survey.load = function (form, callback) {
 
 
 
-    metadata = form.metadata;
+    //metadata = form.metadata;
 
-    var idString = pg.sanitize(metadata.id_string);
-    var name = pg.sanitize(metadata.name);
-    var title = pg.sanitize(metadata.title);
+    var idString = pg.sanitize(form.id_string);
+    var name = pg.sanitize(form.name);
+    var title = pg.sanitize(form.title);
 
     createFieldData(idString)
         .then(function(response) {
@@ -89,7 +89,7 @@ var getProjectID = function () {
 
     var deferred = Q.defer();
 
-    var sql= "SELECT id FROM project WHERE ckan_id LIKE '%demo_project%'";
+    var sql= "SELECT id FROM project WHERE ckan_id = 'demo-project'";
 
     pg.query(sql, function (error, result) {
 

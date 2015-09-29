@@ -1,5 +1,4 @@
-var data = [
-    {
+[    {
         "_notes": [],
         "applicant_name/applicant_name_first": "Dan",
         "_bamboo_dataset_id": "",
@@ -32,5 +31,3 @@ var data = [
         "_id": 3737535
     }
 ]
-
-module.exports = data;

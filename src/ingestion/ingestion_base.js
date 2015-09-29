@@ -20,6 +20,9 @@ var fs = require('fs');
 var common = require("./../common");
 var multiparty = require('multiparty');
 
+//form
+var field_data_form = require ('../../tests/data/cjf-min-data');
+
 //Loop thru providers folder and require each, and create routes
 var app = { providers:{}, router:router };
 
