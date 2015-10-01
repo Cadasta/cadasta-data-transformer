@@ -11,8 +11,8 @@ validator.ONA = function (form) {
 
     //Check for minimum survey fields
     var filtered = form.children.filter(function (item) {
-        if (item.name == 'tenure_type') return false;
-        if (item.name == 'applicant/name') return false;
+        if (item.name == 'tenure_type') return true;
+        if (item.name == 'applicant/name') return true;
         if (item.name == 'date_land_possession') return true;
         if (item.name == 'means_of_acquire') return true;
     });
