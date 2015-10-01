@@ -29,6 +29,7 @@ var app = { providers:{}, router:router };
 app.dataProcessor = require('../controllers/processdata.js');
 app.formProcessor = require('../controllers/processform.js');
 app.data_access = require('../controllers/data_access.js');
+app.validator = require('../controllers/validateform.js');
 
 
 app.init = function(){
