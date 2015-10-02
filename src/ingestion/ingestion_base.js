@@ -19,12 +19,13 @@ var path = require('path');
 var fs = require('fs');
 var common = require("./../common");
 var multiparty = require('multiparty');
+var PythonShell = require('python-shell');
 
 //form
-var field_data_form = require ('../../tests/data/cjf-min-data');
+var field_data_form = require('../../tests/data/cjf-min-data');
 
 //Loop thru providers folder and require each, and create routes
-var app = { providers:{}, router:router };
+var app = {providers: {}, router: router};
 
 app.dataProcessor = require('../controllers/processdata.js');
 app.formProcessor = require('../controllers/processform.js');
@@ -32,7 +33,7 @@ app.data_access = require('../controllers/data_access.js');
 app.validator = require('../controllers/validateform.js');
 
 
-app.init = function(){
+app.init = function () {
 
   buildProviderRoutes();
   buildProviderIndexRoute();
@@ -48,7 +49,7 @@ app.init = function(){
 /***
  * For each provider found in the providers folder, create an API route
  */
-var buildProviderRoutes = function() {
+var buildProviderRoutes = function () {
 
   router.get('/:provider', function (req, res, next) {
 
@@ -70,7 +71,7 @@ var buildProviderRoutes = function() {
 /***
  * Build a 'load' route for each provider that will execute the 'load' method
  */
-var buildProviderLoadRoutes = function() {
+var buildProviderLoadRoutes = function () {
 
   /**
    * @api {post} /providers/:provider/load Upload data
@@ -105,7 +106,7 @@ var buildProviderLoadRoutes = function() {
     var form = new multiparty.Form();
     var parsedFile;
 
-    form.parse(req, function(err, fields, files) {
+    form.parse(req, function (err, fields, files) {
 
       var file = files.file_upload;
 
@@ -122,9 +123,9 @@ var buildProviderLoadRoutes = function() {
         var results = app.data_access.sanitize(JSON.stringify(cjf.data));
 
         //Pass along to Data Transformer
-        app.dataProcessor.load(results).then(function(surveyId){
+        app.dataProcessor.load(results).then(function (surveyId) {
 
-             res.status(200).json({ "status": "Data Loaded."});
+          res.status(200).json({"status": "Data Loaded."});
 
         }).done();
 
@@ -143,7 +144,7 @@ var buildProviderLoadRoutes = function() {
 /***
  * Create a list (index) for each provider found in the providers folder
  */
-var buildProviderIndexRoute = function(){
+var buildProviderIndexRoute = function () {
 
   /**
    * @api {post} /providers Show list of all providers
@@ -161,7 +162,7 @@ var buildProviderIndexRoute = function(){
    *
    *     { "providers": ["csv"] }
    */
-  router.get('/', function(req, res, next) {
+  router.get('/', function (req, res, next) {
 
     res.status(200).json({providers: Object.keys(app.providers)});
 
@@ -169,10 +170,70 @@ var buildProviderIndexRoute = function(){
 
 }
 
+/**
+ * ONA provider validation
+ */
+
+router.post('/ona/validate', function (req, res, next) {
+
+  var form = new multiparty.Form();
+
+  var parsedFile;
+  var project_id = req.params.project_id;
+  var form_id = req.params.project_id;
+
+  form.parse(req, function (err, fields, files) {
+
+    var file = files.xls_file;
+
+    var options = {
+      scriptPath: '../pyxform/pyxform/',
+      args: [file[0].path],
+      mode: "text"
+
+    };
+
+    var formObj;
+
+    PythonShell.run('xls2json.py', options, function (err, results) {
+      console.log(err);
+
+      var obj = "";
+
+      results.forEach(function (res) {
+        obj += res;
+      })
+
+      formObj = JSON.parse(obj);
+
+      app.validator.ONA(formObj)
+          .then(function (result) {
+            // form has passed validation, send back to user
+            res.send.json({success: 'Validation Complete'});
+          })
+          .catch(function (err) {
+            console.log(err);
+            res.send.json({error: err});
+          });
+
+      if (err) throw err;
+      // results is an array consisting of messages collected during execution
+      //console.log('results: %j', results);
+    });
+
+  });
+
+});
+
+router.post('ona/upload-data/:project_id', function (req, res, next) {
+
+  var project_id = req.params.project_id;
+
+  app.formProcessor(req.data);
+
+});
 
 
 //Initialize routes
 app.init();
 module.exports = app;
-
-
