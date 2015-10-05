@@ -10,3 +10,11 @@ Time will be devoted to creating the optimal structure that all incoming data mu
 must account for data updates, deletes, understand geometry and unlimited numbers of unstructured properties.
 
 After mapping decisions are made, the data transformer will need to make requests to the appropriate Cadasta APIs to ensure that the data is saved into the Cadasta DB in the correct manner.
+
+Installation
+
+1. install node packages
+```npm install```
+
+2. install python packages
+```sudo pip install -r requirements.txt```

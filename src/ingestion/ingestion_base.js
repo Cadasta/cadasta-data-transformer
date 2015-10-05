@@ -215,6 +215,7 @@ router.post('/ona/load-form/:project_id', function (req, res, next) {
  * ONA provider validation
  * TODO - make entensible for all providers?
  * TODO - create API docs
+ * TODO - need path to python
  */
 
 router.post('/ona/validate', function (req, res, next) {
@@ -233,7 +234,6 @@ router.post('/ona/validate', function (req, res, next) {
       scriptPath: '../pyxform/pyxform/', // location of script dir
       args: [file[0].path],
       mode: "text"
-
     };
 
     var formObj;
@@ -247,7 +247,7 @@ router.post('/ona/validate', function (req, res, next) {
       // concat results into JSON string
       results.forEach(function (res) {
         obj += res;
-      })
+      });
 
       formObj = JSON.parse(obj);  // parse JSON string
 
@@ -255,7 +255,7 @@ router.post('/ona/validate', function (req, res, next) {
       app.validator.ONA(formObj)
           .then(function (result) {
             // form has passed validation, send back to user
-            res.status(200).json({status: "Validation Complete.", data:formObj});
+            res.status(200).json({status: "Validation Complete.", data:result});
             //res.send({success: 'Validation Complete', formObj:formObj});
           })
           .catch(function (err) {
