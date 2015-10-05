@@ -14,7 +14,9 @@ After mapping decisions are made, the data transformer will need to make request
 Installation
 
 1. install node packages
+
 ```npm install```
 
 2. install python packages
+
 ```sudo pip install -r requirements.txt```
