@@ -13,16 +13,16 @@ After mapping decisions are made, the data transformer will need to make request
 
 ***Installation***
 
-1. install node packages
+1) install node packages
 
 ```npm install```
 
-2. cd into the location of this directory
+2) cd into the location of this directory
 
-3. clone [pyxform](https://github.com/XLSForm/pyxform)
+3) clone [pyxform](https://github.com/XLSForm/pyxform)
 
 ```git clone https://github.com/XLSForm/pyxform.git```
 
-4. install python packages
+4) install python packages
 
 ```sudo pip install -r requirements.txt```
