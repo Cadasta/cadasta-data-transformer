@@ -22,6 +22,7 @@ var survey = module.exports = {};
 
 var section_id = null;
 var field_data_id;
+var project_id;
 var metadata;
 var form;
 
@@ -36,27 +37,19 @@ survey.load = function (cjf, callback) {
 
     var deferred = Q.defer();
 
-    form = cjf;
+    form = cjf.form;
+    project_id = parseInt(cjf.project_id);
 
     //metadata = form.metadata;
 
-    var idString = pg.sanitize(cjf.id_string);
-    var name = pg.sanitize(cjf.name);
-    var title = pg.sanitize(cjf.title);
+    var idString = pg.sanitize(form.id_string);
+    var title = pg.sanitize(form.title);
+    var formid = pg.sanitize(form.formid);
 
-    createFieldData(idString)
+    createFieldData(project_id, idString, formid)
         .then(function(response) {
 
             field_data_id = response;
-
-            return getProjectID();
-
-        }).then(function(response){
-            var project_id = response;
-
-            return updateFieldData(name, title, field_data_id, project_id);
-        })
-        .then(function(response){
 
             var nodeZero = {children: form.children, parent_id: null};
 
@@ -65,7 +58,7 @@ survey.load = function (cjf, callback) {
         })
         .catch(function(err){
 
-            deferred.reject(err)
+            deferred.reject({status:err})
         })
         .done();
 
@@ -75,7 +68,7 @@ survey.load = function (cjf, callback) {
     function allDone(notAborted, arr) {
         //console.log("Survey successfully created. id: " + field_data_id);
         //console.log("The recursive Async survey structure loading is done.");
-        deferred.resolve(field_data_id)
+        deferred.resolve({status:"Sucessfully loaded survey: " + field_data_id + " into CADASTA DB"})
     }
 
     return deferred.promise;
@@ -117,11 +110,11 @@ var getProjectID = function () {
  *
  * @param id_string
  */
-var createFieldData = function (id_string) {
+var createFieldData = function (project_id, id_string, form_id) {
 
     var deferred = Q.defer();
 
-    var sql= 'SELECT * FROM cd_create_field_data(' + id_string + ')';
+    var sql= 'SELECT * FROM cd_create_field_data(' + project_id  + ','  + id_string + ',' + form_id + ')';
 
     pg.query(sql, function (error, result) {
 
