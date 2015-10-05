@@ -26,6 +26,7 @@ var field_data_form = require('../../tests/data/cjf-min-data');
 
 //Loop thru providers folder and require each, and create routes
 var app = {providers: {}, router: router};
+var cjf = {};
 
 app.dataProcessor = require('../controllers/processdata.js');
 app.formProcessor = require('../controllers/processform.js');
@@ -171,23 +172,65 @@ var buildProviderIndexRoute = function () {
 }
 
 /**
+ * @api {post} /providers/ona/load-form/:project_id Upload ONA Form
+ * @apiName PostFormtoONA
+ * @apiGroup Providers
+ * @apiDescription Upload ONA Form
+ * @apiParam {Number} Cadasta project id
+ * @apiParam {Object} postdata the POST data
+ *
+ * @apiSuccess {String} status message noting that the form is loaded
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/providers/ona/load-form/1
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ *     { "status": "Form Loaded." }
+ */
+//TODO create docs
+router.post('/ona/load-form/:project_id', function (req, res, next) {
+
+  var project_id = req.params.project_id;
+
+  // update cjf
+  cjf.form = req.body;
+  cjf.project_id = project_id;
+
+  // load form to DB
+  app.formProcessor.load(cjf)
+      .then(function(response){
+
+        res.status(200).json({status: "Form Loaded."});
+
+      }).catch(function(err){
+
+        res.status(200).json({error: err});
+      });
+
+});
+
+/**
  * ONA provider validation
+ * TODO - make entensible for all providers?
+ * TODO - create API docs
  */
 
 router.post('/ona/validate', function (req, res, next) {
 
   var form = new multiparty.Form();
 
-  var parsedFile;
   var project_id = req.params.project_id;
-  var form_id = req.params.project_id;
 
   form.parse(req, function (err, fields, files) {
 
+    // save xls file
     var file = files.xls_file;
 
+    // python-shell options
     var options = {
-      scriptPath: '../pyxform/pyxform/',
+      scriptPath: '../pyxform/pyxform/', // location of script dir
       args: [file[0].path],
       mode: "text"
 
@@ -195,43 +238,36 @@ router.post('/ona/validate', function (req, res, next) {
 
     var formObj;
 
+    // run pxyform python script
     PythonShell.run('xls2json.py', options, function (err, results) {
-      console.log(err);
+      if (err) throw err;
 
       var obj = "";
 
+      // concat results into JSON string
       results.forEach(function (res) {
         obj += res;
       })
 
-      formObj = JSON.parse(obj);
+      formObj = JSON.parse(obj);  // parse JSON string
 
+      // validate parsed JSON
       app.validator.ONA(formObj)
           .then(function (result) {
             // form has passed validation, send back to user
-            res.send.json({success: 'Validation Complete'});
+            res.status(200).json({status: "Validation Complete.", data:formObj});
+            //res.send({success: 'Validation Complete', formObj:formObj});
           })
           .catch(function (err) {
-            console.log(err);
-            res.send.json({error: err});
+            res.status(200).json({error: err});
+            //res.send({error: err});
           });
-
-      if (err) throw err;
-      // results is an array consisting of messages collected during execution
-      //console.log('results: %j', results);
     });
 
   });
 
 });
 
-router.post('ona/upload-data/:project_id', function (req, res, next) {
-
-  var project_id = req.params.project_id;
-
-  app.formProcessor(req.data);
-
-});
 
 
 //Initialize routes

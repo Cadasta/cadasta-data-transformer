@@ -1,6 +1,4 @@
 var Q = require("q");
-var forEach = require('async-foreach').forEach;
-
 var pg = require('./data_access.js');
 
 var validator = module.exports = {};
@@ -12,7 +10,7 @@ validator.ONA = function (form) {
     //Check for minimum survey fields
     var filtered = form.children.filter(function (item) {
         if (item.name == 'tenure_type') return true;
-        if (item.name == 'applicant/name') return true;
+        if (item.name == 'applicant_name') return true;
         if (item.name == 'date_land_possession') return true;
         if (item.name == 'means_of_acquire') return true;
     });
@@ -20,7 +18,7 @@ validator.ONA = function (form) {
     if (filtered.length == 4) {
         deferred.resolve(form);
     } else {
-        deferred.reject({"error": "Missing minimum survey fields"});
+        deferred.reject("Missing minimum survey fields");
     }
 
     return deferred.promise;
