@@ -3,14 +3,15 @@
   "cadasta_user_id": "43242",
   "operation": "create",
   "survey_id": null,
-  "project_id": "demo-project",
+  "project_id":1,
   "form": {
-    "name": "CJF-minimun",
+    "name": "CJF-Min",
     "title": "Cadasta CJF Minimum",
-    "sms_keyword": "CJF-minimum-1",
+    "sms_keyword": "CJF-Min",
     "default_language": "default",
     "version": "201509282054",
-    "id_string": "CJF-minimum-1",
+    "formid":"3456",
+    "id_string": "CJF-Min",
     "type": "survey",
     "children": [
       {
@@ -180,11 +181,34 @@
       "_bamboo_dataset_id": "",
       "_tags": [],
       "surveyor": "ryanwhitley",
-      "_xform_id_string": "CJF-minimum-1",
-      "_geolocation": [
-        -16.501603,
-        -68.139085
-      ],
+      "_xform_id_string": "CJF-Min",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.13366115093231,
+              -16.4952048753785
+            ],
+            [
+              -68.13404202461241,
+              -16.495719238431235
+            ],
+            [
+              -68.13340365886688,
+              -16.496105009823406
+            ],
+            [
+              -68.13307642936707,
+              -16.49554949877499
+            ],
+            [
+              -68.13366115093231,
+              -16.4952048753785
+            ]
+          ]
+        ]
+      },
       "_duration": 1737,
       "meta/instanceID": "uuid:6cd8f057-8e37-484c-934f-05a8d0be34c9",
       "end": "2015-09-28T16:28:23.000-07:00",

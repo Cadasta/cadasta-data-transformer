@@ -16,9 +16,9 @@ validator.ONA = function (form) {
     });
 
     if (filtered.length == 4) {
-        deferred.resolve(form);
+        deferred.resolve({status: "Validation complete.", data:form});
     } else {
-        deferred.reject("Missing minimum survey fields");
+        deferred.reject({error:"Missing minimum survey fields"});
     }
 
     return deferred.promise;

@@ -10,11 +10,11 @@ data.load = function (form_data) {
 
     var deferred = Q.defer();
 
-    getFieldDataId()
-        .then(function(field_data_id){
-            return loadFieldData(field_data_id,form_data);
-        }).then(function(response){
-            deferred.resolve(response);
+    loadFieldData(form_data)
+        .then(function(response){
+            deferred.resolve({status:response});
+        }).catch(function(err){
+            deferred.reject({error:err});
         });
 
     return deferred.promise;
@@ -26,17 +26,27 @@ data.load = function (form_data) {
  * @param form_data
  * @returns {*|promise}
  */
-function loadFieldData(field_data_id,form_data){
+function loadFieldData(form_data){
 
     var deferred = Q.defer();
 
-    pg.query('SELECT * FROM cd_import_data_json(' + field_data_id + ',' + form_data + ')',function(err,res){
-        if(err){
+    var data = pg.sanitize(JSON.stringify(form_data));
+    var sql = 'SELECT * FROM cd_import_data_json(' + data + ')';
+
+    //TODO pass project id instead of field_data_id
+    pg.queryDeferred(sql)
+        .then(function(res){
+            // DB function returns true or false
+            if(res[0].cd_import_data_json){
+                deferred.resolve('Data Loaded.');
+            } else {
+                //TODO send back better error
+                deferred.reject('Cannot find field_data_id');
+            }
+        })
+        .catch(function(err){
             deferred.reject(err);
-        } else {
-            deferred.resolve(res);
-        }
-    });
+        });
 
     return deferred.promise;
 }
@@ -45,7 +55,7 @@ function loadFieldData(field_data_id,form_data){
  * Get id of latest survey from field_data table (assuming survey doesn't change)
  * @returns {*|promise}
  */
-function getFieldDataId (){
+function getFieldDataId (id_string){
 
     var deferred = Q.defer();
 

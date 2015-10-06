@@ -39,12 +39,15 @@ survey.load = function (cjf, callback) {
 
     form = cjf.form;
     project_id = parseInt(cjf.project_id);
-
     //metadata = form.metadata;
 
     var idString = pg.sanitize(form.id_string);
-    var title = pg.sanitize(form.title);
-    var formid = pg.sanitize(form.formid);
+    //var title = pg.sanitize(form.title);
+    var formid = parseInt(form.formid);
+
+    if (form == null || project_id == null || idString == null || formid == null ) {
+        deferred.reject("project_id, idString, formid, & form Obj required.");
+    }
 
     createFieldData(project_id, idString, formid)
         .then(function(response) {
@@ -75,36 +78,6 @@ survey.load = function (cjf, callback) {
 };
 
 /**
- * Get project id from db
- * //TODO Once CKAN wraps their API around ours; we can ask user for project ID
- * @returns {*|promise}
- */
-var getProjectID = function () {
-
-    var deferred = Q.defer();
-
-    var sql= "SELECT id FROM project WHERE ckan_id = 'demo-project'";
-
-    pg.query(sql, function (error, result) {
-
-        if (error) {
-            deferred.reject(error);
-        } else if (!result instanceof Array|| result.length === 0 || typeof(result[0].id) === "undefined") {
-
-            deferred.reject("Cannot find project ckan_id: demo-project");
-
-        } else {
-
-            // Return new survey id
-            deferred.resolve(result[0].id);
-        }
-
-    });
-
-    return deferred.promise;
-};
-
-/**
  *
  * Create new field_data in Cadasta DB from raw json
  *
@@ -116,42 +89,14 @@ var createFieldData = function (project_id, id_string, form_id) {
 
     var sql= 'SELECT * FROM cd_create_field_data(' + project_id  + ','  + id_string + ',' + form_id + ')';
 
-    pg.query(sql, function (error, result) {
-
-        if (error) {
-            deferred.reject(error);
-        } else if (!result instanceof Array|| result.length === 0 || typeof(result[0].cd_create_field_data) === "undefined") {
-
-            deferred.reject("cd_create_field_data did not return and id.");
-
-        } else {
-
+    pg.queryDeferred(sql)
+        .then(function(result){
             // Return new survey id
             deferred.resolve(result[0].cd_create_field_data);
-
-        }
-
-    });
-
-    return deferred.promise;
-
-};
-
-var updateFieldData = function(name, title, field_data_id, project_id){
-
-    var deferred = Q.defer();
-
-    var sql = "UPDATE field_data SET project_id = " + project_id + ", name = " + name + ", label = " + title + "where id=" + field_data_id;
-
-    pg.query(sql, function (err, res) {
-        if (err) {
-            deferred.reject(err);
-        } else {
-
-            deferred.resolve(res);
-
-        }
-    });
+        })
+        .catch(function(err){
+            deferred.reject(err.detail);
+        });
 
     return deferred.promise;
 

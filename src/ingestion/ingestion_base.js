@@ -206,7 +206,7 @@ router.post('/ona/load-form/:project_id', function (req, res, next) {
 
       }).catch(function(err){
 
-        res.status(200).json({error: err});
+        res.status(200).json({error:err});
       });
 
 });
@@ -218,11 +218,200 @@ router.post('/ona/load-form/:project_id', function (req, res, next) {
  * TODO - need path to python
  */
 
+/**
+ * @api {post} /providers/ona/validate Validate ONA XLSForm
+ * @apiName ValidateONAXLSForm
+ * @apiGroup Providers
+ * @apiDescription Upload ONA Form
+ * @apiParam {file} postdata.xls_file the POST data
+ *
+ * @apiSuccess {Object} Object with status message and JSON representation of XLSForm
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/providers/ona/validate
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ *     {
+  "status": "Validation Complete.",
+  "data": {
+    "name": "ASPimGMbYsam8yc9ppcZzzPs",
+    "title": "Cadasta CJF Minimum Monday3",
+    "sms_keyword": "CJF-minimum-Monday3",
+    "default_language": "default",
+    "id_string": "CJF-minimum-Monday3",
+    "type": "survey",
+    "children": [
+      {
+        "type": "start",
+        "name": "start"
+      },
+      {
+        "type": "end",
+        "name": "end"
+      },
+      {
+        "type": "today",
+        "name": "today"
+      },
+      {
+        "type": "deviceid",
+        "name": "deviceid"
+      },
+      {
+        "type": "note",
+        "name": "title",
+        "label": "Cadasta CJF Minimum – September 2015"
+      },
+      {
+        "choices": [
+          {
+            "name": "katechapman",
+            "label": "Kate Chapman"
+          },
+          {
+            "name": "frankpichel",
+            "label": "Frank Pichel"
+          },
+          {
+            "name": "ryanwhitley",
+            "label": "Ryan Whitley"
+          },
+          {
+            "name": "danielbaah",
+            "label": "Daniel Baah"
+          },
+          {
+            "name": "toddslind",
+            "label": "Todd Slind"
+          },
+          {
+            "name": "nicholashallahan",
+            "label": "Nicholas Hallahan"
+          }
+        ],
+        "type": "select one",
+        "name": "surveyor",
+        "label": "Name of Surveyor"
+      },
+      {
+        "control": {
+          "appearance": "field-list"
+        },
+        "children": [
+          {
+            "type": "text",
+            "name": "applicant_name_first",
+            "label": "Applicant First Name"
+          },
+          {
+            "type": "text",
+            "name": "applicant_name_middle",
+            "label": "Applicant Middle Name"
+          },
+          {
+            "type": "text",
+            "name": "applicant_name_last",
+            "label": "Applicant Last Name (Surname)"
+          }
+        ],
+        "type": "group",
+        "name": "applicant_name",
+        "label": "Name of Applicant"
+      },
+      {
+        "type": "geopoint",
+        "name": "geo_location",
+        "label": "Location of Parcel"
+      },
+      {
+        "type": "date",
+        "name": "date_land_possession",
+        "label": "Date of Land Possession"
+      },
+      {
+        "choices": [
+          {
+            "name": "freehold",
+            "label": "Freehold"
+          },
+          {
+            "name": "lease",
+            "label": "Lease"
+          },
+          {
+            "name": "inheritance",
+            "label": "Inheritance"
+          },
+          {
+            "name": "gift",
+            "label": "Gift"
+          },
+          {
+            "name": "other",
+            "label": "Other"
+          }
+        ],
+        "type": "select one",
+        "name": "means_of_acquire",
+        "label": "How did you acquire the land?"
+      },
+      {
+        "choices": [
+          {
+            "name": "allodial",
+            "label": "Allodial Ownder"
+          },
+          {
+            "name": "freehold",
+            "label": "Freehold"
+          },
+          {
+            "name": "common_law_freehold",
+            "label": "Common Law Freehold"
+          },
+          {
+            "name": "lease",
+            "label": "Leasehold Interest"
+          },
+          {
+            "name": "contractual",
+            "label": "Contractual / Share Cropping / Customary Tenure Agreement"
+          }
+        ],
+        "type": "select one",
+        "name": "tenure_type",
+        "label": "What is the Social Tenure Type?"
+      },
+      {
+        "control": {
+          "bodyless": true
+        },
+        "type": "group",
+        "name": "meta",
+        "children": [
+          {
+            "bind": {
+              "readonly": "true()",
+              "calculate": "concat('uuid:', uuid())"
+            },
+            "type": "calculate",
+            "name": "instanceID"
+          }
+        ]
+      }
+    ]
+  }
+}
+ *
+ */
+
 router.post('/ona/validate', function (req, res, next) {
 
   var form = new multiparty.Form();
 
-  var project_id = req.params.project_id;
+  //var project_id = req.params.project_id;
 
   form.parse(req, function (err, fields, files) {
 
