@@ -195,7 +195,8 @@ router.post('/ona/load-form/:project_id', function (req, res, next) {
   var project_id = req.params.project_id;
 
   // update cjf
-  cjf.form = req.body;
+  cjf.form = req.body.data;
+  cjf.form.formid = req.body.formid;
   cjf.project_id = project_id;
 
   // load form to DB
