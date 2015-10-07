@@ -21,6 +21,8 @@ var common = require("./../common");
 var multiparty = require('multiparty');
 var PythonShell = require('python-shell');
 var http = require('http');
+var request = require('request');
+var fs = require('fs');
 http.post = require('http-post');
 
 //Loop thru providers folder and require each, and create routes
@@ -457,7 +459,7 @@ router.post('/ona/validate', function (req, res, next) {
 
 });
 
-router.get('/ona/submit-form', function (req, res, next) {
+router.post('/ona/submit-form', function (req, res, next) {
 
     var files = {
         param: "xls_file",
@@ -472,14 +474,22 @@ router.get('/ona/submit-form', function (req, res, next) {
         }
     };
 
-    var request = http.post(options, [], files, function(res){
-        console.log(res.statusCode);
-    });
+    var form = new multiparty.Form();
 
-    request.on('error', function (err) {
-        console.log(err);
-        //console.log('error: ' + err.message);
-    });
+    //var project_id = req.params.project_id;
+
+    form.parse(req, function (err, fields, files) {
+
+        var file = files.xls_file;
+
+        request.post('http://54.245.82.92/api/v1/forms', {formData:file[0].path, auth:{user:'cadasta',pass:'CadastralData2015!'}}, function optionalCallback(err, httpResponse, body) {
+            if (err) {
+                return console.error('upload failed:', err);
+            }
+            console.log('Upload successful!  Server responded with:', body);
+        });
+
+    })
 
 });
 
