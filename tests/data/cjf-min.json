@@ -10,8 +10,8 @@
     "sms_keyword": "CJF-Min",
     "default_language": "default",
     "version": "201509282054",
-    "formid":"3456",
-    "id_string": "CJF-Min",
+    "formid":"139",
+    "id_string": "CJF-minimum",
     "type": "survey",
     "children": [
       {
