@@ -20,6 +20,8 @@ var fs = require('fs');
 var common = require("./../common");
 var multiparty = require('multiparty');
 var PythonShell = require('python-shell');
+var http = require('http');
+http.post = require('http-post');
 
 //Loop thru providers folder and require each, and create routes
 var app = {providers: {}, router: router};
@@ -118,7 +120,7 @@ var buildProviderLoadRoutes = function () {
       provider.load(file[0].path, function (err, cjf) {
 
         //Got the CJF.
-        var results = app.data_access.sanitize(JSON.stringify(cjf.data));
+        var results = cjf.data;
 
         //Pass along to Data Transformer
         app.dataProcessor.load(results).then(function (surveyId) {
@@ -455,6 +457,31 @@ router.post('/ona/validate', function (req, res, next) {
 
 });
 
+router.get('/ona/submit-form', function (req, res, next) {
+
+    var files = {
+        param: "xls_file",
+        path: "././tests/data/CJF-minimum.xlsx"
+    };
+
+    var options = {
+        url:'http://54.245.82.92/api/v1/forms',
+        method:'POST',
+        headers:{
+            'Authorization': 'Token 74756f0ab0da149f649e9074c529b633f3daaa02'
+        }
+    };
+
+    var request = http.post(options, [], files, function(res){
+        console.log(res.statusCode);
+    });
+
+    request.on('error', function (err) {
+        console.log(err);
+        //console.log('error: ' + err.message);
+    });
+
+});
 
 
 //Initialize routes
