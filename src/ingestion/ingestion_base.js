@@ -72,10 +72,6 @@ router.get('/:provider', function (req, res, next) {
     }
 });
 
-router.get('/:provider/hello', function (req, res, next) {
-    res.status(200).json({status: "hello"});
-});
-
 
 /**
  * @api {post} /providers/:provider/load Upload data
@@ -143,7 +139,7 @@ router.post('/:provider/load', function (req, res, next) {
 });
 
 
-router.post('/:provider/register-trigger/:formId', function (req, res, next) {
+router.get('/:provider/register-trigger/:formId', function (req, res, next) {
     //Get the tokenized provider from the route and make sure it exists.
     //If we're all good, then try to fire the 'fetch' method for the provider
     var provider = app.providers[req.params.provider];
