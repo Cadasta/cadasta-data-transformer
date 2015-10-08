@@ -31,74 +31,80 @@ app.data_access = require('../controllers/data_access.js');
 app.validator = require('../controllers/validateform.js');
 
 
-app.init = function () {
-
-  buildProviderRoutes();
-  buildProviderIndexRoute();
-  buildProviderLoadRoutes();
-
-}
-
-
-/***
- * All Routes set up in this file are prepended with a /providers/ route.
+/**
+ * @api {post} /providers Show list of all providers
+ * @apiName GetProviders
+ * @apiGroup Providers
+ *
+ *
+ * @apiSuccess {String[]} providers list of available providers
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/providers
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ *     { "providers": ["csv"] }
  */
+router.get('/', function (req, res, next) {
+
+    res.status(200).json({providers: Object.keys(app.providers)});
+
+});
+
 
 /***
  * For each provider found in the providers folder, create an API route
  */
-var buildProviderRoutes = function () {
 
-  router.get('/:provider', function (req, res, next) {
+router.get('/:provider', function (req, res, next) {
 
     //Look up the provider in the list of providers
     var provider = app.providers[req.params.provider];
 
     if (provider) {
-      res.status(200).json({status: "hello " + req.params.provider + " ingestion!"});
+        res.status(200).json({status: "hello " + req.params.provider + " ingestion!"});
     }
     else {
-      //Provider not found
-      res.status(200).json({status: "Provider " + req.params.provider + " not found. Make sure the provider name is correct."});
+        //Provider not found
+        res.status(200).json({status: "Provider " + req.params.provider + " not found. Make sure the provider name is correct."});
     }
+});
 
-  });
+router.get('/:provider/hello', function (req, res, next) {
+    res.status(200).json({status: "hello"});
+});
 
-}
 
-/***
- * Build a 'load' route for each provider that will execute the 'load' method
+/**
+ * @api {post} /providers/:provider/load Upload data
+ * @apiName PostFileToProvider
+ * @apiGroup Providers
+ * @apiDescription Upload data in a "provider-defined" format
+ * @apiParam {String} provider name/type of provider, e.g. csv
+ * @apiParam {Object} postdata the POST data
+ * @apiParam {file} postdata.file_upload the data file uploaded
+ *
+ * @apiSuccess {String} status message noting that the data is loaded
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/providers/csv/load
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ *     { "status": "Data Loaded." }
  */
-var buildProviderLoadRoutes = function () {
-
-  /**
-   * @api {post} /providers/:provider/load Upload data
-   * @apiName PostFileToProvider
-   * @apiGroup Providers
-   * @apiDescription Upload data in a "provider-defined" format
-   * @apiParam {String} provider name/type of provider, e.g. csv
-   * @apiParam {Object} postdata the POST data
-   * @apiParam {file} postdata.file_upload the data file uploaded
-   *
-   * @apiSuccess {String} status message noting that the data is loaded
-   *
-   * @apiExample {curl} Example usage:
-   *     curl -i http://localhost/providers/csv/load
-   *
-   * @apiSuccessExample {json} Success-Response:
-   *     HTTP/1.1 200 OK
-   *
-   *     { "status": "Data Loaded." }
-   */
-  router.post('/:provider/load', function (req, res, next) {
+router.post('/:provider/load', function (req, res, next) {
 
     //Get the tokenized provider from the route and make sure it exists.
     //If we're all good, then try to fire the 'fetch' method for the provider
     var provider = app.providers[req.params.provider];
 
     if (!provider) {
-      res.status(200).json({status: "Provider " + provider + " not found. Make sure the provider name is correct."});
-      return;
+        res.status(200).json({status: "Provider " + provider + " not found. Make sure the provider name is correct."});
+        return;
     }
 
     var form = new multiparty.Form();
@@ -106,88 +112,58 @@ var buildProviderLoadRoutes = function () {
 
     form.parse(req, function (err, fields, files) {
 
-      var file = files.file_upload;
+        var file = files.file_upload;
 
-      //Next, check for a dataset.  We need a dataset to load.
-      if (!file || !file[0]) {
-        res.status(200).json({status: "Load command must include a 'file_upload' parameter with a dataset to be loaded."});
+        //Next, check for a dataset.  We need a dataset to load.
+        if (!file || !file[0]) {
+            res.status(200).json({status: "Load command must include a 'file_upload' parameter with a dataset to be loaded."});
+            return;
+        }
+
+
+        provider.load(file[0].path, function (err, cjf) {
+
+            //Got the CJF.
+            var results = app.data_access.sanitize(JSON.stringify(cjf.data));
+
+            //Pass along to Data Transformer
+            app.dataProcessor.load(results).then(function (surveyId) {
+
+                res.status(200).json({"status": "Data Loaded."});
+
+            }).done();
+
+        });
+
+        //resp.end(util.inspect({fields:fields, files:files}));
+        //parsedFile = parseCsv(files.upload[0].path);
+        //console.log(parsedFile);
+    });
+
+});
+
+
+router.post('/:provider/register-trigger/:formId', function (req, res, next) {
+    //Get the tokenized provider from the route and make sure it exists.
+    //If we're all good, then try to fire the 'fetch' method for the provider
+    var provider = app.providers[req.params.provider];
+    var formId = app.providers[req.params.formId];
+
+    if (!provider) {
+        res.status(200).json({status: "Provider " + provider + " not found. Make sure the provider name is correct."});
         return;
-      }
+    }
 
+    if (!formId) {
+        res.status(200).json({status: "You must specify a form id to register a trigger."});
+        return;
+    }
 
-      provider.load(file[0].path, function (err, cjf) {
+    if (typeof provider.registerTriggerForForm == 'function') {
+        provider.registerTriggerForForm(formId);
+    }
+});
 
-        //Got the CJF.
-        var results = app.data_access.sanitize(JSON.stringify(cjf.data));
-
-        //Pass along to Data Transformer
-        app.dataProcessor.load(results).then(function (surveyId) {
-
-          res.status(200).json({"status": "Data Loaded."});
-
-        }).done();
-
-      });
-
-      //resp.end(util.inspect({fields:fields, files:files}));
-      //parsedFile = parseCsv(files.upload[0].path);
-      //console.log(parsedFile);
-    });
-
-  });
-
-    router.post('/:provider/register-trigger/:formId', function (req, res, next) {
-        //Get the tokenized provider from the route and make sure it exists.
-        //If we're all good, then try to fire the 'fetch' method for the provider
-        var provider = app.providers[req.params.provider];
-        var formId = app.providers[req.params.formId];
-
-        if (!provider) {
-            res.status(200).json({status: "Provider " + provider + " not found. Make sure the provider name is correct."});
-            return;
-        }
-
-        if (!formId) {
-            res.status(200).json({status: "You must specify a form id to register a trigger."});
-            return;
-        }
-
-        if (typeof provider.registerTriggerForForm == 'function') {
-            provider.registerTriggerForForm(formId);
-        }
-    });
-    
-}
-
-
-/***
- * Create a list (index) for each provider found in the providers folder
- */
-var buildProviderIndexRoute = function () {
-
-  /**
-   * @api {post} /providers Show list of all providers
-   * @apiName GetProviders
-   * @apiGroup Providers
-   *
-   *
-   * @apiSuccess {String[]} providers list of available providers
-   *
-   * @apiExample {curl} Example usage:
-   *     curl -i http://localhost/providers
-   *
-   * @apiSuccessExample {json} Success-Response:
-   *     HTTP/1.1 200 OK
-   *
-   *     { "providers": ["csv"] }
-   */
-  router.get('/', function (req, res, next) {
-
-    res.status(200).json({providers: Object.keys(app.providers)});
-
-  });
-
-}
 
 /**
  * @api {post} /providers/ona/load-form/:project_id Upload ONA Form
@@ -229,202 +205,6 @@ router.post('/ona/load-form/:project_id', function (req, res, next) {
       });
 
 });
-
-/**
- * ONA provider validation
- * TODO - make entensible for all providers?
- * TODO - create API docs
- * TODO - need path to python
- */
-
-/**
- * @api {post} /providers/ona/validate Validate ONA XLSForm
- * @apiName ValidateONAXLSForm
- * @apiGroup Providers
- * @apiDescription Upload ONA Form
- * @apiParam {file} postdata.xls_file the POST data
- *
- * @apiSuccess {Object} Object with status message and JSON representation of XLSForm
- *
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost/providers/ona/validate
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *
- *     {
-  "status": "Validation Complete.",
-  "data": {
-    "name": "ASPimGMbYsam8yc9ppcZzzPs",
-    "title": "Cadasta CJF Minimum Monday3",
-    "sms_keyword": "CJF-minimum-Monday3",
-    "default_language": "default",
-    "id_string": "CJF-minimum-Monday3",
-    "type": "survey",
-    "children": [
-      {
-        "type": "start",
-        "name": "start"
-      },
-      {
-        "type": "end",
-        "name": "end"
-      },
-      {
-        "type": "today",
-        "name": "today"
-      },
-      {
-        "type": "deviceid",
-        "name": "deviceid"
-      },
-      {
-        "type": "note",
-        "name": "title",
-        "label": "Cadasta CJF Minimum – September 2015"
-      },
-      {
-        "choices": [
-          {
-            "name": "katechapman",
-            "label": "Kate Chapman"
-          },
-          {
-            "name": "frankpichel",
-            "label": "Frank Pichel"
-          },
-          {
-            "name": "ryanwhitley",
-            "label": "Ryan Whitley"
-          },
-          {
-            "name": "danielbaah",
-            "label": "Daniel Baah"
-          },
-          {
-            "name": "toddslind",
-            "label": "Todd Slind"
-          },
-          {
-            "name": "nicholashallahan",
-            "label": "Nicholas Hallahan"
-          }
-        ],
-        "type": "select one",
-        "name": "surveyor",
-        "label": "Name of Surveyor"
-      },
-      {
-        "control": {
-          "appearance": "field-list"
-        },
-        "children": [
-          {
-            "type": "text",
-            "name": "applicant_name_first",
-            "label": "Applicant First Name"
-          },
-          {
-            "type": "text",
-            "name": "applicant_name_middle",
-            "label": "Applicant Middle Name"
-          },
-          {
-            "type": "text",
-            "name": "applicant_name_last",
-            "label": "Applicant Last Name (Surname)"
-          }
-        ],
-        "type": "group",
-        "name": "applicant_name",
-        "label": "Name of Applicant"
-      },
-      {
-        "type": "geopoint",
-        "name": "geo_location",
-        "label": "Location of Parcel"
-      },
-      {
-        "type": "date",
-        "name": "date_land_possession",
-        "label": "Date of Land Possession"
-      },
-      {
-        "choices": [
-          {
-            "name": "freehold",
-            "label": "Freehold"
-          },
-          {
-            "name": "lease",
-            "label": "Lease"
-          },
-          {
-            "name": "inheritance",
-            "label": "Inheritance"
-          },
-          {
-            "name": "gift",
-            "label": "Gift"
-          },
-          {
-            "name": "other",
-            "label": "Other"
-          }
-        ],
-        "type": "select one",
-        "name": "means_of_acquire",
-        "label": "How did you acquire the land?"
-      },
-      {
-        "choices": [
-          {
-            "name": "allodial",
-            "label": "Allodial Ownder"
-          },
-          {
-            "name": "freehold",
-            "label": "Freehold"
-          },
-          {
-            "name": "common_law_freehold",
-            "label": "Common Law Freehold"
-          },
-          {
-            "name": "lease",
-            "label": "Leasehold Interest"
-          },
-          {
-            "name": "contractual",
-            "label": "Contractual / Share Cropping / Customary Tenure Agreement"
-          }
-        ],
-        "type": "select one",
-        "name": "tenure_type",
-        "label": "What is the Social Tenure Type?"
-      },
-      {
-        "control": {
-          "bodyless": true
-        },
-        "type": "group",
-        "name": "meta",
-        "children": [
-          {
-            "bind": {
-              "readonly": "true()",
-              "calculate": "concat('uuid:', uuid())"
-            },
-            "type": "calculate",
-            "name": "instanceID"
-          }
-        ]
-      }
-    ]
-  }
-}
- *
- */
 
 router.post('/ona/validate', function (req, res, next) {
 
@@ -477,7 +257,4 @@ router.post('/ona/validate', function (req, res, next) {
 });
 
 
-
-//Initialize routes
-app.init();
 module.exports = app;
