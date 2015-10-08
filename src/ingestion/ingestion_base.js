@@ -143,7 +143,7 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
     //Get the tokenized provider from the route and make sure it exists.
     //If we're all good, then try to fire the 'fetch' method for the provider
     var provider = app.providers[req.params.provider];
-    var formId = app.providers[req.params.formId];
+    var formId = req.params.formId;
 
     if (!provider) {
         res.status(200).json({status: "Provider " + provider + " not found. Make sure the provider name is correct."});
