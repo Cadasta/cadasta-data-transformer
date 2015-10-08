@@ -20,10 +20,6 @@ var fs = require('fs');
 var common = require("./../common");
 var multiparty = require('multiparty');
 var PythonShell = require('python-shell');
-var http = require('http');
-var request = require('request');
-var fs = require('fs');
-http.post = require('http-post');
 
 //Loop thru providers folder and require each, and create routes
 var app = {providers: {}, router: router};
@@ -122,7 +118,7 @@ var buildProviderLoadRoutes = function () {
       provider.load(file[0].path, function (err, cjf) {
 
         //Got the CJF.
-        var results = cjf.data;
+        var results = app.data_access.sanitize(JSON.stringify(cjf.data));
 
         //Pass along to Data Transformer
         app.dataProcessor.load(results).then(function (surveyId) {
@@ -422,15 +418,14 @@ router.post('/ona/validate', function (req, res, next) {
 
     // python-shell options
     var options = {
-      scriptPath: '../pyxform/pyxform/', // location of script dir
+      scriptPath: path.join(__dirname + ' ../../../pyxform/pyxform/'), // location of script dir
       args: [file[0].path],
       mode: "text"
     };
 
     var formObj;
 
-    // run pxyform python script
-    PythonShell.run('xls2json.py', options, function (err, results) {
+    PythonShell.run('xls2json.py',options, function (err, results) {
       if (err) throw err;
 
       var obj = "";
@@ -459,39 +454,6 @@ router.post('/ona/validate', function (req, res, next) {
 
 });
 
-router.post('/ona/submit-form', function (req, res, next) {
-
-    var files = {
-        param: "xls_file",
-        path: "././tests/data/CJF-minimum.xlsx"
-    };
-
-    var options = {
-        url:'http://54.245.82.92/api/v1/forms',
-        method:'POST',
-        headers:{
-            'Authorization': 'Token 74756f0ab0da149f649e9074c529b633f3daaa02'
-        }
-    };
-
-    var form = new multiparty.Form();
-
-    //var project_id = req.params.project_id;
-
-    form.parse(req, function (err, fields, files) {
-
-        var file = files.xls_file;
-
-        request.post('http://54.245.82.92/api/v1/forms', {formData:file[0].path, auth:{user:'cadasta',pass:'CadastralData2015!'}}, function optionalCallback(err, httpResponse, body) {
-            if (err) {
-                return console.error('upload failed:', err);
-            }
-            console.log('Upload successful!  Server responded with:', body);
-        });
-
-    })
-
-});
 
 
 //Initialize routes
