@@ -136,6 +136,27 @@ var buildProviderLoadRoutes = function () {
 
   });
 
+    router.post('/:provider/register-trigger/:formId', function (req, res, next) {
+        //Get the tokenized provider from the route and make sure it exists.
+        //If we're all good, then try to fire the 'fetch' method for the provider
+        var provider = app.providers[req.params.provider];
+        var formId = app.providers[req.params.formId];
+
+        if (!provider) {
+            res.status(200).json({status: "Provider " + provider + " not found. Make sure the provider name is correct."});
+            return;
+        }
+
+        if (!formId) {
+            res.status(200).json({status: "You must specify a form id to register a trigger."});
+            return;
+        }
+
+        if (typeof provider.registerTriggerForForm == 'function') {
+            provider.registerTriggerForForm(formId);
+        }
+    });
+    
 }
 
 
