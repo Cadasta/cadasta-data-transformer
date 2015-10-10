@@ -162,7 +162,11 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
     }
 
     provider.registerTriggerForForm(formId, function(response) {
-
+        if (response.status == "ERROR") {
+            res.status(400).json(response);
+        } else {
+            res.status(200).json(response);
+        }
     });
 
 });
