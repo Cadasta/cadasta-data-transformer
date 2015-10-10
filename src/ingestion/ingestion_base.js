@@ -147,17 +147,17 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
 
     // Make sure the given provider is Ona, the one that registers triggers
     if (typeof provider.registerTriggerForForm != 'function' || provider === null) {
-        res.status(400).json({status: "Provider does not have a register trigger method."});
+        res.status(400).json({status: 400, msg: "Provider does not have a register trigger method."});
         return;
     }
 
     if (!provider) {
-        res.status(400).json({status: "Provider not found. Make sure the provider name is correct."});
+        res.status(400).json({status: 400, msg: "Provider not found. Make sure the provider name is correct."});
         return;
     }
 
     if (!formId) {
-        res.status(400).json({status: "You must specify a form id to register a trigger."});
+        res.status(400).json({status: 400, msg: "You must specify a form id to register a trigger."});
         return;
     }
 
