@@ -119,15 +119,15 @@ router.post('/:provider/load', function (req, res, next) {
 
         provider.load(file[0].path, function (err, cjf) {
 
-        //Got the CJF.
-        var results = cjf.data;
+            //Got the CJF.
+            var results = cjf.data;
 
-        //Pass along to Data Transformer
-        app.dataProcessor.load(results).then(function () {
+            //Pass along to Data Transformer
+            app.dataProcessor.load(results).then(function () {
 
-                res.status(200).json({"status": "Data Loaded."});
+                    res.status(200).json({"status": "Data Loaded."});
 
-            }).done();
+                }).done();
 
         });
 
@@ -170,6 +170,7 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
     });
 
 });
+
 
 
 /**
