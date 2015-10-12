@@ -119,11 +119,11 @@ router.post('/:provider/load', function (req, res, next) {
 
         provider.load(file[0].path, function (err, cjf) {
 
-            //Got the CJF.
-            var results = app.data_access.sanitize(JSON.stringify(cjf.data));
+        //Got the CJF.
+        var results = cjf.data;
 
-            //Pass along to Data Transformer
-            app.dataProcessor.load(results).then(function (surveyId) {
+        //Pass along to Data Transformer
+        app.dataProcessor.load(results).then(function () {
 
                 res.status(200).json({"status": "Data Loaded."});
 
@@ -226,15 +226,14 @@ router.post('/ona/validate', function (req, res, next) {
 
     // python-shell options
     var options = {
-      scriptPath: '../pyxform/pyxform/', // location of script dir
+      scriptPath: path.join(__dirname + ' ../../../pyxform/pyxform/'), // location of script dir
       args: [file[0].path],
       mode: "text"
     };
 
     var formObj;
 
-    // run pxyform python script
-    PythonShell.run('xls2json.py', options, function (err, results) {
+    PythonShell.run('xls2json.py',options, function (err, results) {
       if (err) throw err;
 
       var obj = "";
