@@ -5,9 +5,9 @@
   "survey_id": null,
   "project_id":1,
   "form": {
-    "name": "CJF-Min",
+    "name": "CJF-Minimum",
     "title": "Cadasta CJF Minimum",
-    "sms_keyword": "CJF-Min",
+    "sms_keyword": "CJF-Minimum",
     "default_language": "default",
     "version": "201509282054",
     "formid":"139",
@@ -181,7 +181,7 @@
       "_bamboo_dataset_id": "",
       "_tags": [],
       "surveyor": "ryanwhitley",
-      "_xform_id_string": "CJF-Min",
+      "_xform_id_string": "CJF-minimum",
       "_geolocation": {
         "type": "Polygon",
         "coordinates": [
