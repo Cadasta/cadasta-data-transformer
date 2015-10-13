@@ -199,6 +199,11 @@ function trigger(req, res, next) {
         return;
     }
 
+    // We don't care about the body of the request from Ona.
+    // Ona is just hitting our trigger, which tells us that
+    // there is new data. The Ona provider's trigger function
+    // then goes in and fetches appropriate form data from
+    // Ona's data.json endpoint.
     provider.trigger(formId, function(response) {
         if (response.status == "ERROR") {
             res.status(400).json(response);
