@@ -1,9 +1,7 @@
 var Q = require("q");
 var pg = require('./data_access.js');
 
-var validator = module.exports = {};
-
-validator.form = function (form) {
+module.exports = function (form) {
 
     var deferred = Q.defer();
 
