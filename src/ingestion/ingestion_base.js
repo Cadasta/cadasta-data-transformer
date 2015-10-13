@@ -20,6 +20,9 @@ var fs = require('fs');
 var common = require("./../common");
 var multiparty = require('multiparty');
 var PythonShell = require('python-shell');
+var multer = require('multer');
+var upload = multer();
+
 
 //Loop thru providers folder and require each, and create routes
 var app = {providers: {}, router: router};
@@ -119,11 +122,11 @@ router.post('/:provider/load', function (req, res, next) {
 
         provider.load(file[0].path, function (err, cjf) {
 
-        //Got the CJF.
-        var results = cjf.data;
+            //Got the CJF.
+            var results = cjf.data;
 
-        //Pass along to Data Transformer
-        app.dataProcessor.load(results).then(function () {
+            //Pass along to Data Transformer
+            app.dataProcessor.load(results).then(function () {
 
                 res.status(200).json({"status": "Data Loaded."});
 
@@ -161,7 +164,7 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
         return;
     }
 
-    provider.registerTriggerForForm(formId, function(response) {
+    provider.registerTriggerForForm(formId, function (response) {
         if (response.status == "ERROR") {
             res.status(400).json(response);
         } else {
@@ -191,74 +194,28 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
  *     { "status": "Form Loaded." }
  */
 //TODO create docs
-router.post('/ona/load-form/:project_id', function (req, res, next) {
+router.post('/:provider/load-form/:project_id',function (req, res, next) {
+    var project_id = req.params.project_id;
 
-  var project_id = req.params.project_id;
+    //Get the tokenized provider from the route and make sure it exists.
+    //If we're all good, then try to fire the 'fetch' method for the provider
+    var provider = app.providers[req.params.provider];
 
-  // update cjf
-  cjf.form = req.body.data;
-  cjf.form.formid = req.body.formid;
-  cjf.project_id = project_id;
+    // Make sure the given provider is Ona, the one that registers triggers
+    if (typeof provider.loadForm != 'function' || provider === null) {
+        res.status(400).json({status: 400, msg: "Provider does not have a load form method."});
+        return;
+    }
 
-  // load form to DB
-  app.formProcessor.load(cjf)
-      .then(function(response){
+    if (!provider) {
+        res.status(400).json({status: 400, msg: "Provider not found. Make sure the provider name is correct."});
+        return;
+    }
 
-        res.status(200).json({status: "Form Loaded."});
+    provider.loadForm()
+        .then(function(res){
 
-      }).catch(function(err){
-
-        res.status(200).json({error:err});
-      });
-
-});
-
-router.post('/ona/validate', function (req, res, next) {
-
-  var form = new multiparty.Form();
-
-  //var project_id = req.params.project_id;
-
-  form.parse(req, function (err, fields, files) {
-
-    // save xls file
-    var file = files.xls_file;
-
-    // python-shell options
-    var options = {
-      scriptPath: path.join(__dirname + ' ../../../pyxform/pyxform/'), // location of script dir
-      args: [file[0].path],
-      mode: "text"
-    };
-
-    var formObj;
-
-    PythonShell.run('xls2json.py',options, function (err, results) {
-      if (err) throw err;
-
-      var obj = "";
-
-      // concat results into JSON string
-      results.forEach(function (res) {
-        obj += res;
-      });
-
-      formObj = JSON.parse(obj);  // parse JSON string
-
-      // validate parsed JSON
-      app.validator.ONA(formObj)
-          .then(function (result) {
-            // form has passed validation, send back to user
-            res.status(200).json({status: "Validation Complete.", data:result});
-            //res.send({success: 'Validation Complete', formObj:formObj});
-          })
-          .catch(function (err) {
-            res.status(200).json({error: err});
-            //res.send({error: err});
-          });
-    });
-
-  });
+        })
 
 });
 

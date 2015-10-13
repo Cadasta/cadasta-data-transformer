@@ -3,7 +3,7 @@ var pg = require('./data_access.js');
 
 var validator = module.exports = {};
 
-validator.ONA = function (form) {
+validator.form = function (form) {
 
     var deferred = Q.defer();
 
