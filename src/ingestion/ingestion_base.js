@@ -221,10 +221,25 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
         provider.xlstoJson(file, function(response){
             // validate parsed JSON
             app.validator(response)
-                .then(function (result) {
+                .then(function (response) {
                     // make request to ONA
-                    return provider.uploadFormtoONA(file)
+                    provider.uploadFormtoONA(response.data ,project_id, file, function(response){
+                        if (response.status == 'ERROR') {
+                            res.status(400).json(response);
+                            //res.end();
+                        } else {
+                            // load CJF form to DB
+                            app.formProcessor.load(response.ona)
+                                .then(function(response){
+                                    res.status(200).json(response)
+                                })
+                                .catch(function(err){
+                                    res.status(400).json(err)
+                                });
+                        }
+                    })
                 })
+                .done()
         });
 
     });
