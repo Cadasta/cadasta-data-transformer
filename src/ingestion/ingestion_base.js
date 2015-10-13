@@ -202,8 +202,8 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
     var provider = app.providers[req.params.provider];
 
     // Make sure the given provider is Ona, the one that registers triggers
-    if (typeof provider.loadForm != 'function' || provider === null) {
-        res.status(400).json({status: 400, msg: "Provider does not have a load form method."});
+    if (typeof provider.xlstoJson != 'function' || typeof provider.uploadFormtoONA !== 'function' ||  provider === null) {
+        res.status(400).json({status: 400, msg: "Provider does not have a xls2Json method."});
         return;
     }
 
@@ -212,10 +212,22 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
         return;
     }
 
-    provider.loadForm()
-        .then(function(res){
+    var form = new multiparty.Form();
 
-        })
+    form.parse(req, function (err, fields, files) {
+
+        var file = files.xls_file;
+
+        provider.xlstoJson(file, function(response){
+            // validate parsed JSON
+            app.validator(response)
+                .then(function (result) {
+                    // make request to ONA
+                    return provider.uploadFormtoONA(file)
+                })
+        });
+
+    });
 
 });
 
