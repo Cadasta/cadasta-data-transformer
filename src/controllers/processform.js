@@ -71,7 +71,7 @@ survey.load = function (cjf, callback) {
     function allDone(notAborted, arr) {
         //console.log("Survey successfully created. id: " + field_data_id);
         //console.log("The recursive Async survey structure loading is done.");
-        deferred.resolve({status:"OKAY", msg:"Sucessfully Loaded field_data into DB"})
+        deferred.resolve({status:"OK", msg:"Sucessfully Loaded field_data into DB"})
     }
 
     return deferred.promise;

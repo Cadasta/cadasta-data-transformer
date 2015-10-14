@@ -14,7 +14,7 @@ module.exports = function (form) {
     });
 
     if (filtered.length == 4) {
-        deferred.resolve({status: "OKAY", data:form});
+        deferred.resolve({status: "OK", data:form});
     } else {
         deferred.reject({status:"ERROR", msg:"Failed validation: Missing minimum survey fields"});
     }
