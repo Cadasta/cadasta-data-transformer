@@ -208,7 +208,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
     }
 
     // Make sure the given provider is Ona, the one that registers triggers
-    if (typeof provider.xlstoJson !== 'function' || typeof provider.uploadFormtoONA !== 'function') {
+    if (typeof provider.xlstoJson !== 'function' || typeof provider.uploadFormToONA !== 'function') {
         res.status(400).json({status: 400, msg: "Provider does not have a xls2Json method."});
         return;
     }
@@ -224,7 +224,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
             app.validator(response)
                 .then(function (response) {
                     // make request to ONA
-                    provider.uploadFormtoONA(response.data , project_id, file, function(response){
+                    provider.uploadFormToONA(response.data , project_id, file, function(response){
 
                         if (response.status == 'ERROR') {
 
