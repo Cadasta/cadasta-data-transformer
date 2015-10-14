@@ -219,9 +219,9 @@ function trigger(req, res, next) {
 
 /**
  * @api {post} /providers/ona/load-form/:project_id Upload ONA Form
- * @apiName PostFormtoONA
+ * @apiName PostFormtoOna
  * @apiGroup Providers
- * @apiDescription Upload ONA Form
+ * @apiDescription Upload Ona Form
  * @apiParam {Number} Cadasta project id
  * @apiParam {Object} postdata the POST data
  *
@@ -249,7 +249,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
     }
 
     // Make sure the given provider is Ona, the one that registers triggers
-    if (typeof provider.xlsToJson !== 'function' || typeof provider.uploadFormToONA !== 'function') {
+    if (typeof provider.xlsToJson !== 'function' || typeof provider.uploadFormToOna !== 'function') {
         res.status(400).json({status: 400, msg: "Provider does not have a xls2Json method."});
         return;
     }
@@ -265,7 +265,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
             app.validator(response)
                 .then(function (response) {
                     // make request to ONA
-                    provider.uploadFormToONA(response.data , project_id, file, function(response){
+                    provider.uploadFormToOna(response.data , project_id, file, function(response){
 
                         if (response.status == 'ERROR') {
 
