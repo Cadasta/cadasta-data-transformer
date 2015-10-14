@@ -149,7 +149,7 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
     var formId = req.params.formId;
 
     // Make sure the given provider is Ona, the one that registers triggers
-    if (typeof provider.registerTriggerForForm != 'function' || provider === null) {
+    if (typeof provider.registerTriggerForForm !== 'function' || provider === null) {
         res.status(400).json({status: 400, msg: "Provider does not have a register trigger method."});
         return;
     }
@@ -174,7 +174,48 @@ router.get('/:provider/register-trigger/:formId', function (req, res, next) {
 
 });
 
+router.get('/:provider/trigger/:formId', function (req, res, next) {
+    trigger(req, res, next);
+});
 
+router.post('/:provider/trigger/:formId', function (req, res, next) {
+    trigger(req, res, next);
+});
+
+function trigger(req, res, next) {
+    var provider = app.providers[req.params.provider];
+    var formId = req.params.formId;
+
+    // Make sure the given provider is Ona, the one that registers triggers
+    if (typeof provider.trigger !== 'function' || provider === null) {
+        res.status(400).json({status: 400, msg: "Provider does not have a trigger method."});
+        return;
+    }
+
+    if (!provider) {
+        res.status(400).json({status: 400, msg: "Provider not found. Make sure the provider name is correct."});
+        return;
+    }
+
+    if (!formId) {
+        res.status(400).json({status: 400, msg: "You must specify a form id to register a trigger."});
+        return;
+    }
+
+    // We don't care about the body of the request from Ona.
+    // Ona is just hitting our trigger, which tells us that
+    // there is new data. The Ona provider's trigger function
+    // then goes in and fetches appropriate form data from
+    // Ona's data.json endpoint.
+    provider.trigger(formId, function(response) {
+        if (response.status == "ERROR") {
+            res.status(400).json(response);
+        } else {
+            res.status(200).json(response);
+        }
+    });
+
+}
 
 /**
  * @api {post} /providers/ona/load-form/:project_id Upload ONA Form
