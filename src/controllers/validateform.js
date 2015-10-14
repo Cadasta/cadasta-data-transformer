@@ -1,9 +1,7 @@
 var Q = require("q");
 var pg = require('./data_access.js');
 
-var validator = module.exports = {};
-
-validator.ONA = function (form) {
+module.exports = function (form) {
 
     var deferred = Q.defer();
 
@@ -16,9 +14,9 @@ validator.ONA = function (form) {
     });
 
     if (filtered.length == 4) {
-        deferred.resolve({status: "Validation complete.", data:form});
+        deferred.resolve({status: "OK", data:form});
     } else {
-        deferred.reject({error:"Missing minimum survey fields"});
+        deferred.reject({status:"ERROR", msg:"Failed validation: Missing minimum survey fields"});
     }
 
     return deferred.promise;

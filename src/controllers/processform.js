@@ -61,7 +61,7 @@ survey.load = function (cjf, callback) {
         })
         .catch(function(err){
 
-            deferred.reject({status:err})
+            deferred.reject({status:"ERROR", msg:err})
         })
         .done();
 
@@ -71,7 +71,7 @@ survey.load = function (cjf, callback) {
     function allDone(notAborted, arr) {
         //console.log("Survey successfully created. id: " + field_data_id);
         //console.log("The recursive Async survey structure loading is done.");
-        deferred.resolve({status:"Sucessfully loaded survey: " + field_data_id + " into CADASTA DB"})
+        deferred.resolve({status:"OK", msg:"Sucessfully Loaded field_data into DB"})
     }
 
     return deferred.promise;
@@ -95,7 +95,7 @@ var createFieldData = function (project_id, id_string, form_id) {
             deferred.resolve(result[0].cd_create_field_data);
         })
         .catch(function(err){
-            deferred.reject(err.detail);
+            deferred.reject(err.detail || err.hint);
         });
 
     return deferred.promise;
