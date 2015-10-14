@@ -223,11 +223,14 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
             app.validator(response)
                 .then(function (response) {
                     // make request to ONA
-                    provider.uploadFormtoONA(response.data ,project_id, file, function(response){
+                    provider.uploadFormtoONA(response.data , project_id, file, function(response){
+
                         if (response.status == 'ERROR') {
+
                             res.status(400).json(response);
-                            //res.end();
+
                         } else {
+
                             // load CJF form to DB
                             app.formProcessor.load(response.ona)
                                 .then(function(response){
@@ -238,6 +241,8 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
                                 });
                         }
                     })
+                }).catch(function(err){
+                    res.status(400).json(err);
                 })
                 .done()
         });
