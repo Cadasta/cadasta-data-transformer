@@ -202,14 +202,14 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
     //If we're all good, then try to fire the 'fetch' method for the provider
     var provider = app.providers[req.params.provider];
 
-    // Make sure the given provider is Ona, the one that registers triggers
-    if (typeof provider.xlstoJson != 'function' || typeof provider.uploadFormtoONA !== 'function' ||  provider === null) {
-        res.status(400).json({status: 400, msg: "Provider does not have a xls2Json method."});
+    if (typeof provider !== 'object' || provider === null) {
+        res.status(400).json({status: 400, msg: "Provider not found. Make sure the provider name is correct."});
         return;
     }
 
-    if (!provider) {
-        res.status(400).json({status: 400, msg: "Provider not found. Make sure the provider name is correct."});
+    // Make sure the given provider is Ona, the one that registers triggers
+    if (typeof provider.xlstoJson !== 'function' || typeof provider.uploadFormtoONA !== 'function') {
+        res.status(400).json({status: 400, msg: "Provider does not have a xls2Json method."});
         return;
     }
 
