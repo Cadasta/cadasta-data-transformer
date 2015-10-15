@@ -265,24 +265,48 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
             app.validator(response)
                 .then(function (response) {
                     // make request to ONA
-                    provider.uploadFormToOna(response.data , project_id, file, function(response){
+                    provider.uploadFormToOna(response.data , project_id, file, function(r){
 
-                        if (response.status == 'ERROR') {
+                        if (r.status == 'ERROR') {
 
-                            res.status(400).json(response);
+                            res.status(400).json(r);
 
                         } else {
 
-                            // load CJF form to DB
-                            app.formProcessor.load(response.ona)
-                                .then(function(response){
-                                    res.status(200).json(response)
-                                })
-                                .catch(function(err){
-                                    res.status(400).json(err)
+                            if (typeof provider.registerTriggerForForm === 'function') {
+                                // Register trigger for form
+                                provider.registerTriggerForForm(r.ona.form.formid, function (obj) {
+                                    if (response.status == "ERROR") {
+                                        obj.trigger = false;
+                                        res.status(400).json(obj);
+                                    } else {
+                                        // load CJF form to DB
+                                        app.formProcessor.load(r.ona)
+                                            .then(function(r2){
+                                                r2.trigger = true
+                                                res.status(200).json(r2)
+                                            })
+                                            .catch(function(e2){
+                                                e2.trigger = true;
+                                                res.status(400).json(e2)
+                                            });
+                                    }
                                 });
+                            } else {
+                                // load CJF form to DB
+                                app.formProcessor.load(r.ona)
+                                    .then(function(r3){
+                                        r3.trigger = false;
+                                        res.status(200).json(r3)
+                                    })
+                                    .catch(function(e3){
+                                        e3.trigger = false;
+                                        res.status(400).json(e3)
+                                    });
+                            }
+
                         }
-                    })
+                    });
                 }).catch(function(err){
                     res.status(400).json(err);
                 })

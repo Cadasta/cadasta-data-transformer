@@ -22,7 +22,6 @@ var survey = module.exports = {};
 
 var section_id = null;
 var field_data_id;
-var project_id;
 var metadata;
 var form;
 
@@ -38,7 +37,7 @@ survey.load = function (cjf, callback) {
     var deferred = Q.defer();
 
     form = cjf.form;
-    project_id = parseInt(cjf.project_id);
+    var project_id = parseInt(cjf.project_id);
     //metadata = form.metadata;
 
     var idString = pg.sanitize(form.id_string);
