@@ -260,9 +260,13 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
 
         var file = files.xls_file;
 
-        provider.xlsToJson(file, function(response){
+        provider.xlsToJson(file, function(xlsToJsonRes){
+            if (xlsToJsonRes.status === 'ERROR') {
+                res.status(400).json(xlsToJsonRes);
+            }
+
             // validate parsed JSON
-            app.validator(response)
+            app.validator(xlsToJsonRes.form)
                 .then(function (response) {
                     // make request to ONA
                     provider.uploadFormToOna(response.data , project_id, file, function(r){
