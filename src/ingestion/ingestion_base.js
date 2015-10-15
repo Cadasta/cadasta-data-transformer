@@ -276,7 +276,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
                             if (typeof provider.registerTriggerForForm === 'function') {
                                 // Register trigger for form
                                 provider.registerTriggerForForm(r.ona.form.formid, function (obj) {
-                                    if (response.status == "ERROR") {
+                                    if (obj.status == "ERROR") {
                                         obj.trigger = false;
                                         res.status(400).json(obj);
                                     } else {
