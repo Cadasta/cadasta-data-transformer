@@ -142,37 +142,7 @@ router.post('/:provider/load', function (req, res, next) {
 });
 
 
-router.get('/:provider/register-trigger/:formId', function (req, res, next) {
-    //Get the tokenized provider from the route and make sure it exists.
-    //If we're all good, then try to fire the 'fetch' method for the provider
-    var provider = app.providers[req.params.provider];
-    var formId = req.params.formId;
 
-    // Make sure the given provider is Ona, the one that registers triggers
-    if (typeof provider.registerTriggerForForm !== 'function' || provider === null) {
-        res.status(400).json({status: 400, msg: "Provider does not have a register trigger method."});
-        return;
-    }
-
-    if (!provider) {
-        res.status(400).json({status: 400, msg: "Provider not found. Make sure the provider name is correct."});
-        return;
-    }
-
-    if (!formId) {
-        res.status(400).json({status: 400, msg: "You must specify a form id to register a trigger."});
-        return;
-    }
-
-    provider.registerTriggerForForm(formId, function (response) {
-        if (response.status == "ERROR") {
-            res.status(400).json(response);
-        } else {
-            res.status(200).json(response);
-        }
-    });
-
-});
 
 router.get('/:provider/trigger/:formId', function (req, res, next) {
     trigger(req, res, next);
@@ -287,7 +257,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
                             if (typeof provider.registerTriggerForForm === 'function') {
                                 // Register trigger for form
                                 provider.registerTriggerForForm(r.ona.form.formid, function (obj) {
-                                    if (obj.status == "ERROR") {
+                                    if (obj.status == "ERROR" || obj.status === 'NO_ONA_API_KEY') {
                                         obj.trigger = false;
                                         res.status(400).json(obj);
                                     } else {
