@@ -260,6 +260,13 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
 
         var file = files.xls_file;
 
+        if (!file) {
+            res.status(400).json({
+                status: 'ERROR',
+                msg: 'You must POST form-data with a key of "xls_file" and a value of an XLS Excel file.'
+            });
+        }
+
         provider.xlsToJson(file, function(xlsToJsonRes){
             if (xlsToJsonRes.status === 'ERROR') {
                 res.status(400).json(xlsToJsonRes);
@@ -271,7 +278,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
                     // make request to ONA
                     provider.uploadFormToOna(response.data , project_id, file, function(r){
 
-                        if (r.status == 'ERROR') {
+                        if (r.status === 'ERROR' || r.status === 'NO_ONA_API_KEY') {
 
                             res.status(400).json(r);
 
