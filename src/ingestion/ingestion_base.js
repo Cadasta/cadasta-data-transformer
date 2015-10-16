@@ -254,10 +254,10 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
 
                         } else {
 
-                            if (typeof provider.registerTriggerForForm === 'function') {
+                            if (typeof provider.registerTrigger === 'function') {
                                 // Register trigger for form
-                                provider.registerTriggerForForm(r.ona.form.formid, function (obj) {
-                                    if (obj.status == "ERROR" || obj.status === 'NO_ONA_API_KEY') {
+                                provider.registerTrigger(r.ona.form.formid, r.ona_api_key, function (obj) {
+                                    if (obj.status == "ERROR") {
                                         obj.trigger = false;
                                         res.status(400).json(obj);
                                     } else {
