@@ -1,0 +1,832 @@
+{
+  "version": 1.0,
+  "cadasta_user_id": "43242",
+  "operation": "create",
+  "survey_id": null,
+  "project_id":1,
+  "form": {
+    "name": "CJF-Minimum",
+    "title": "Cadasta CJF Minimum",
+    "sms_keyword": "CJF-Minimum",
+    "default_language": "default",
+    "version": "201509282054",
+    "formid":"139",
+    "id_string": "CJF-minimum",
+    "type": "survey",
+    "children": [
+      {
+        "type": "start",
+        "name": "start"
+      },
+      {
+        "type": "end",
+        "name": "end"
+      },
+      {
+        "type": "today",
+        "name": "today"
+      },
+      {
+        "type": "deviceid",
+        "name": "deviceid"
+      },
+      {
+        "type": "note",
+        "name": "title",
+        "label": "Cadasta CJF Minimum – September 2015"
+      },
+      {
+        "label": "Name of Surveyor",
+        "type": "select one",
+        "children": [
+          {
+            "name": "katechapman",
+            "label": "Kate Chapman"
+          },
+          {
+            "name": "frankpichel",
+            "label": "Frank Pichel"
+          },
+          {
+            "name": "ryanwhitley",
+            "label": "Ryan Whitley"
+          },
+          {
+            "name": "danielbaah",
+            "label": "Daniel Baah"
+          },
+          {
+            "name": "toddslind",
+            "label": "Todd Slind"
+          },
+          {
+            "name": "nicholashallahan",
+            "label": "Nicholas Hallahan"
+          }
+        ],
+        "name": "surveyor"
+      },
+      {
+        "control": {
+          "appearance": "field-list"
+        },
+        "label": "Name of Applicant",
+        "type": "group",
+        "children": [
+          {
+            "type": "text",
+            "name": "applicant_name_first",
+            "label": "Applicant First Name"
+          },
+          {
+            "type": "text",
+            "name": "applicant_name_middle",
+            "label": "Applicant Middle Name"
+          },
+          {
+            "type": "text",
+            "name": "applicant_name_last",
+            "label": "Applicant Last Name (Surname)"
+          }
+        ],
+        "name": "applicant_name"
+      },
+      {
+        "type": "geopoint",
+        "name": "geo_location",
+        "label": "Location of Parcel"
+      },
+      {
+        "type": "date",
+        "name": "date_land_possession",
+        "label": "Date of Land Possession"
+      },
+      {
+        "label": "How did you acquire the land?",
+        "type": "select one",
+        "children": [
+          {
+            "name": "freehold",
+            "label": "Freehold"
+          },
+          {
+            "name": "lease",
+            "label": "Lease"
+          },
+          {
+            "name": "inheritance",
+            "label": "Inheritance"
+          },
+          {
+            "name": "gift",
+            "label": "Gift"
+          },
+          {
+            "name": "other",
+            "label": "Other"
+          }
+        ],
+        "name": "means_of_acquire"
+      },
+      {
+        "label": "What is the Social Tenure Type?",
+        "type": "select one",
+        "children": [
+          {
+            "name": "allodial",
+            "label": "Allodial Ownder"
+          },
+          {
+            "name": "freehold",
+            "label": "Freehold"
+          },
+          {
+            "name": "common_law_freehold",
+            "label": "Common Law Freehold"
+          },
+          {
+            "name": "lease",
+            "label": "Leasehold Interest"
+          },
+          {
+            "name": "contractual",
+            "label": "Contractual / Share Cropping / Customary Tenure Agreement"
+          }
+        ],
+        "name": "tenure_type"
+      },
+      {
+        "control": {
+          "bodyless": true
+        },
+        "type": "group",
+        "children": [
+          {
+            "bind": {
+              "readonly": "true()",
+              "calculate": "concat('uuid:', uuid())"
+            },
+            "type": "calculate",
+            "name": "instanceID"
+          }
+        ],
+        "name": "meta"
+      }
+    ]
+  },
+  "data":[
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Makkonen",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "katechapman",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.13127398490906,
+              -16.498594502708375
+            ],
+            [
+              -68.13038885593414,
+              -16.4990522778716
+            ],
+            [
+              -68.13022255897522,
+              -16.49927344975331
+            ],
+            [
+              -68.1305605173111,
+              -16.499906102809422
+            ],
+            [
+              -68.13167631626129,
+              -16.49923744504563
+            ],
+            [
+              -68.13127398490906,
+              -16.498594502708375
+            ]
+          ]
+        ]
+      },
+      "_duration": 27.0,
+      "meta/instanceID": "uuid:6d998c3d-d712-4dbc-b041-16939500f5a7",
+      "end": "2015-10-07T12:55:55.218-07",
+      "date_land_possession": "2010-05-25",
+      "applicant_name/applicant_name_last": "Ontario ",
+      "start": "2015-10-07T12:55:28.024-07",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "6d998c3d-d712-4dbc-b041-16939500f5a7",
+      "means_of_acquire": "inheritance",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:55:46",
+      "_version": "201510071848",
+      "tenure_type": "common_law_freehold",
+      "deviceid": "35385206286421",
+      "_id": 15
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Oscar",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "frankpichel",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.12278747558594,
+              -16.498764239693028
+            ],
+            [
+              -68.12235832214354,
+              -16.498723091346783
+            ],
+            [
+              -68.12212228775024,
+              -16.49896998129291
+            ],
+            [
+              -68.12220811843872,
+              -16.499813519564615
+            ],
+            [
+              -68.12242269515991,
+              -16.50026614834023
+            ],
+            [
+              -68.12302350997923,
+              -16.500225000313478
+            ],
+            [
+              -68.1231951713562,
+              -16.499607778861918
+            ],
+            [
+              -68.12317371368408,
+              -16.499031703730207
+            ],
+            [
+              -68.12278747558594,
+              -16.498764239693028
+            ]
+          ]
+        ]
+      },
+      "_duration": 952.0,
+      "meta/instanceID": "uuid:dfd5dc1a-020c-4b41-85cc-95e74c3d6fb3",
+      "end": "2015-10-07T12:55:16.564-07",
+      "date_land_possession": "2014-09-09",
+      "applicant_name/applicant_name_last": "Sanders ",
+      "start": "2015-10-07T12:39:24.123-07",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "dfd5dc1a-020c-4b41-85cc-95e74c3d6fb3",
+      "means_of_acquire": "lease",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:55:07",
+      "_version": "201510071848",
+      "tenure_type": "allodial",
+      "deviceid": "35385206286421",
+      "_id": 14
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Jorge",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "danielbaah",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.12787294387817,
+              -16.497509211195194
+            ],
+            [
+              -68.12701463699341,
+              -16.497797251242467
+            ],
+            [
+              -68.12585592269897,
+              -16.49765323127243
+            ],
+            [
+              -68.12551259994507,
+              -16.498188162049214
+            ],
+            [
+              -68.12609195709229,
+              -16.49870251717039
+            ],
+            [
+              -68.12624216079712,
+              -16.499484334335264
+            ],
+            [
+              -68.12804460525513,
+              -16.499134574415276
+            ],
+            [
+              -68.12750816345215,
+              -16.498291033182856
+            ],
+            [
+              -68.12817335128784,
+              -16.498085290860864
+            ],
+            [
+              -68.12787294387817,
+              -16.497509211195194
+            ]
+          ]
+        ]
+      },
+      "_duration": 63.0,
+      "meta/instanceID": "uuid:8b696d77-0478-4967-b816-0d23f751f0ce",
+      "end": "2015-10-07T12:30:34.093-07",
+      "date_land_possession": "1976-07-07",
+      "applicant_name/applicant_name_last": "Garcia",
+      "start": "2015-10-07T12:29:31.535-07",
+      "geo_location": "47.6686462 -122.3843782 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "8b696d77-0478-4967-b816-0d23f751f0ce",
+      "means_of_acquire": "lease",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:30:25",
+      "_version": "201510071848",
+      "tenure_type": "lease",
+      "deviceid": "35385206286421",
+      "_id": 13
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Enrique",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "ryanwhitley",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.12783002853394,
+              -16.507569784395276
+            ],
+            [
+              -68.12815189361572,
+              -16.507857809458777
+            ],
+            [
+              -68.12774419784546,
+              -16.50816640726493
+            ],
+            [
+              -68.12752962112427,
+              -16.507960675448892
+            ],
+            [
+              -68.12783002853394,
+              -16.507569784395276
+            ]
+          ]
+        ]
+      },
+      "_duration": 57.0,
+      "meta/instanceID": "uuid:b705fc47-0815-45ef-b448-e80a9875dafa",
+      "end": "2015-10-07T12:29:06.780-07",
+      "date_land_possession": "2010-09-14",
+      "applicant_name/applicant_name_last": "Raymond",
+      "start": "2015-10-07T12:28:09.534-07",
+      "geo_location": "47.6686271 -122.3843665 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "b705fc47-0815-45ef-b448-e80a9875dafa",
+      "means_of_acquire": "inheritance",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:28:57",
+      "_version": "201510071848",
+      "tenure_type": "contractual",
+      "deviceid": "35385206286421",
+      "_id": 12
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Daniel",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "frankpichel",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.12744379043579,
+              -16.50843385829847
+            ],
+            [
+              -68.12744379043579,
+              -16.508084114564785
+            ],
+            [
+              -68.12714338302612,
+              -16.508084114564785
+            ],
+            [
+              -68.12714338302612,
+              -16.50843385829847
+            ],
+            [
+              -68.12744379043579,
+              -16.50843385829847
+            ]
+          ]
+        ]
+      },
+      "_duration": 63.0,
+      "meta/instanceID": "uuid:f2c41d36-c072-4e48-baa7-69985af17e73",
+      "end": "2015-10-07T12:26:01.477-07",
+      "date_land_possession": "1994-04-19",
+      "applicant_name/applicant_name_last": "Collins",
+      "start": "2015-10-07T12:24:58.656-07",
+      "geo_location": "47.6686356 -122.3843786 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "f2c41d36-c072-4e48-baa7-69985af17e73",
+      "means_of_acquire": "other",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:25:52",
+      "_version": "201510071848",
+      "tenure_type": "common_law_freehold",
+      "deviceid": "35385206286421",
+      "_id": 11
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Sean",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "danielbaah",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.13304424285889,
+              -16.50571818445583
+            ],
+            [
+              -68.13304424285889,
+              -16.505224421477298
+            ],
+            [
+              -68.13278675079346,
+              -16.505224421477298
+            ],
+            [
+              -68.13278675079346,
+              -16.50571818445583
+            ],
+            [
+              -68.13304424285889,
+              -16.50571818445583
+            ]
+          ]
+        ]
+      },
+      "_duration": 588.0,
+      "meta/instanceID": "uuid:7be08dfc-9fa1-4066-aa11-83e4c0d22016",
+      "end": "2015-10-07T12:24:55.170-07",
+      "date_land_possession": "2015-09-08",
+      "applicant_name/applicant_name_last": "Dominquez",
+      "start": "2015-10-07T12:15:07.023-07",
+      "geo_location": "47.668641 -122.3844136 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "7be08dfc-9fa1-4066-aa11-83e4c0d22016",
+      "means_of_acquire": "inheritance",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:24:45",
+      "_version": "201510071848",
+      "tenure_type": "lease",
+      "deviceid": "35385206286421",
+      "_id": 10
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Aubrey ",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "frankpichel",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.13263654708862,
+              -16.505779904739484
+            ],
+            [
+              -68.13263654708862,
+              -16.505265568440333
+            ],
+            [
+              -68.13235759735107,
+              -16.505265568440333
+            ],
+            [
+              -68.13235759735107,
+              -16.505779904739484
+            ],
+            [
+              -68.13263654708862,
+              -16.505779904739484
+            ]
+          ]
+        ]
+      },
+      "_duration": 268.0,
+      "meta/instanceID": "uuid:6804c006-8446-417a-b632-acfeb346ea58",
+      "end": "2015-10-07T12:12:00.194-07",
+      "date_land_possession": "2010-06-22",
+      "applicant_name/applicant_name_last": "Brown",
+      "start": "2015-10-07T12:07:32.250-07",
+      "geo_location": "47.6686177 -122.3843398 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "6804c006-8446-417a-b632-acfeb346ea58",
+      "means_of_acquire": "inheritance",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:11:51",
+      "_version": "201510071848",
+      "tenure_type": "lease",
+      "deviceid": "35385206286421",
+      "_id": 9
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "David",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "toddslind",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.13379526138306,
+              -16.50182976686982
+            ],
+            [
+              -68.13308715820312,
+              -16.502488128784687
+            ],
+            [
+              -68.13394546508789,
+              -16.50321849641168
+            ],
+            [
+              -68.13459992408752,
+              -16.502488128784687
+            ],
+            [
+              -68.13379526138306,
+              -16.50182976686982
+            ]
+          ]
+        ]
+      },
+      "_duration": 123.0,
+      "meta/instanceID": "uuid:dd4546dd-8080-4882-8496-adf6dbb37c8d",
+      "end": "2015-10-07T12:03:24.897-07",
+      "date_land_possession": "1982-10-05",
+      "applicant_name/applicant_name_last": "Sanchez",
+      "start": "2015-10-07T12:01:21.101-07",
+      "geo_location": "47.668637 -122.3843566 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "dd4546dd-8080-4882-8496-adf6dbb37c8d",
+      "means_of_acquire": "lease",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:03:15",
+      "_version": "201510071848",
+      "tenure_type": "allodial",
+      "deviceid": "35385206286421",
+      "_id": 8
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Michelle",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "ryanwhitley",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.13315153121948,
+              -16.51012084859766
+            ],
+            [
+              -68.1328296661377,
+              -16.510552880330703
+            ],
+            [
+              -68.13345193862915,
+              -16.51079975517319
+            ],
+            [
+              -68.1338596343994,
+              -16.510388296927207
+            ],
+            [
+              -68.13315153121948,
+              -16.51012084859766
+            ]
+          ]
+        ]
+      },
+      "_duration": 99.0,
+      "meta/instanceID": "uuid:18895bfc-c919-4c60-9cbd-24a07c3f8e60",
+      "end": "2015-10-07T12:01:16.420-07",
+      "date_land_possession": "2006-10-07",
+      "applicant_name/applicant_name_last": "Johnson",
+      "start": "2015-10-07T11:59:37.030-07",
+      "geo_location": "47.6686343 -122.3843523 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "18895bfc-c919-4c60-9cbd-24a07c3f8e60",
+      "means_of_acquire": "freehold",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T19:01:07",
+      "_version": "201510071848",
+      "tenure_type": "freehold",
+      "deviceid": "35385206286421",
+      "_id": 7
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Ernest",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "danielbaah",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Point",
+        "coordinates": [
+          -68.13583374023436,
+          -16.508207553601878
+        ]
+      },
+      "_duration": 146.0,
+      "meta/instanceID": "uuid:d17e3431-28ac-4a08-b400-83d754f6ac87",
+      "end": "2015-10-07T11:59:28.372-07",
+      "date_land_possession": "2007-10-10",
+      "applicant_name/applicant_name_last": "Thomas",
+      "start": "2015-10-07T11:57:02.310-07",
+      "geo_location": "47.6686078 -122.3843179 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "d17e3431-28ac-4a08-b400-83d754f6ac87",
+      "means_of_acquire": "lease",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T18:59:19",
+      "_version": "201510071848",
+      "tenure_type": "allodial",
+      "deviceid": "35385206286421",
+      "_id": 6
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Sarah",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "danielbaah",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -68.13505053520203,
+            -16.504144310566016
+          ],
+          [
+            -68.13538312911987,
+            -16.503815132707842
+          ]
+        ]
+      },
+      "_duration": 110.0,
+      "meta/instanceID": "uuid:dd9c0448-d00b-493c-b648-f4750b963a97",
+      "end": "2015-10-07T11:55:15.949-07",
+      "date_land_possession": "2015-10-07",
+      "applicant_name/applicant_name_last": "Napoles",
+      "start": "2015-10-07T11:53:25.198-07",
+      "geo_location": "47.6685962 -122.3844056 0.0 30.0",
+      "_attachments": [],
+      "applicant_name/applicant_name_middle": "Wiley",
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "dd9c0448-d00b-493c-b648-f4750b963a97",
+      "means_of_acquire": "inheritance",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T18:55:06",
+      "_version": "201510071848",
+      "tenure_type": "freehold",
+      "deviceid": "35385206286421",
+      "_id": 5
+    },
+    {
+      "_notes": [],
+      "applicant_name/applicant_name_first": "Trevor",
+      "_bamboo_dataset_id": "",
+      "_tags": [],
+      "surveyor": "danielbaah",
+      "_xform_id_string": "CJF-minimum",
+      "_geolocation": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -68.1349378824234,
+              -16.504036299143085
+            ],
+            [
+              -68.13471794128418,
+              -16.503820276116183
+            ],
+            [
+              -68.1349915266037,
+              -16.50361453967575
+            ],
+            [
+              -68.13522219657898,
+              -16.503815132707842
+            ],
+            [
+              -68.1349378824234,
+              -16.504036299143085
+            ]
+          ]
+        ]
+      },
+      "_duration": 221.0,
+      "meta/instanceID": "uuid:5f3055dd-5c4e-4002-8737-6f46e4fc6183",
+      "end": "2015-10-07T11:53:10.748-07",
+      "date_land_possession": "1999-04-25",
+      "applicant_name/applicant_name_last": "Booker",
+      "start": "2015-10-07T11:49:29.914-07",
+      "geo_location": "47.6686139 -122.3843515 0.0 30.0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "today": "2015-10-07",
+      "_uuid": "5f3055dd-5c4e-4002-8737-6f46e4fc6183",
+      "means_of_acquire": "inheritance",
+      "_submitted_by": null,
+      "formhub/uuid": "5b453ab2cbec49f79193293262d68376",
+      "_submission_time": "2015-10-07T18:53:01",
+      "_version": "201510071848",
+      "tenure_type": "lease",
+      "deviceid": "35385206286421",
+      "_id": 4
+    }
+  ]
+}

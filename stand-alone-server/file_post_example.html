@@ -1,0 +1,35 @@
+<html>
+<head>
+    <title>CSV Upload Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div>
+    <span>CSV Test</span>
+    <form action="http://localhost:3006/providers/csv/load" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file_upload">
+        <button type="submit" class="btn">Submit</button>
+    </form>
+
+</div>
+
+
+<div>
+    <span>GeoJSON Test</span>
+    <form action="http://localhost:3006/providers/geojson/load" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file_upload">
+        <button type="submit" class="btn">Submit</button>
+    </form>
+</div>
+
+<div>
+    <span>ONA Test</span>
+    <form action="http://localhost:3006/providers/ona/load" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file_upload">
+        <button type="submit" class="btn">Submit</button>
+    </form>
+</div>
+
+</body>
+</html>
