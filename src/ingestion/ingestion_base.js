@@ -243,7 +243,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
             }
 
             // validate parsed JSON
-            app.validator(xlsToJsonRes)
+            app.validator(xlsToJsonRes.form)
                 .then(function (response) {
                     // make request to ONA
                     provider.uploadFormToOna(response.data , project_id, file, function(r){
