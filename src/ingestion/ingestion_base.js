@@ -264,7 +264,7 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
                                         // load CJF form to DB
                                         app.formProcessor.load(r.ona)
                                             .then(function(r2){
-                                                r2.trigger = true
+                                                r2.trigger = true;
                                                 res.status(200).json(r2)
                                             })
                                             .catch(function(e2){
@@ -274,16 +274,9 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
                                     }
                                 });
                             } else {
-                                // load CJF form to DB
-                                app.formProcessor.load(r.ona)
-                                    .then(function(r3){
-                                        r3.trigger = false;
-                                        res.status(200).json(r3)
-                                    })
-                                    .catch(function(e3){
-                                        e3.trigger = false;
-                                        res.status(400).json(e3)
-                                    });
+                                // Do not load load to DB if trigger is false
+                                res.status(400).json({status:"ERROR",trigger:false})
+
                             }
 
                         }
