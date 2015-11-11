@@ -8,12 +8,13 @@ module.exports = function (form) {
     //Check for minimum survey fields
     var filtered = form.children.filter(function (item) {
         if (item.name == 'tenure_type') return true;
-        if (item.name == 'applicant_name') return true;
+        if (item.name == 'applicant_name_full') return true;
+        if (item.name == 'applicant_name_group') return true;
         if (item.name == 'date_land_possession') return true;
         if (item.name == 'means_of_acquire') return true;
     });
 
-    if (filtered.length == 4) {
+    if (filtered.length == 5) {
         deferred.resolve({status: "OK", data:form});
     } else {
         deferred.reject({status:"ERROR", msg:"Failed validation: Missing minimum survey fields"});
@@ -22,4 +23,3 @@ module.exports = function (form) {
     return deferred.promise;
 
 };
-
