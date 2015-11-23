@@ -12,9 +12,10 @@ module.exports = function (form) {
         if (item.name == 'applicant_name_group') return true;
         if (item.name == 'date_land_possession') return true;
         if (item.name == 'means_of_acquire') return true;
+        if (item.name == 'geo_location') return true;
     });
 
-    if (filtered.length == 5) {
+    if (filtered.length == 6) {
         deferred.resolve({status: "OK", data:form});
     } else {
         deferred.reject({status:"ERROR", msg:"Failed validation: Missing minimum survey fields"});
