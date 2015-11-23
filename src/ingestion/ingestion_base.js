@@ -128,9 +128,9 @@ router.post('/:provider/load', function (req, res, next) {
             //Pass along to Data Transformer
             app.dataProcessor.load(results).then(function () {
 
-                    res.status(200).json({"status": "Data Loaded."});
+                res.status(200).json({"status": "Data Loaded."});
 
-                }).done();
+            }).done();
 
         });
 
@@ -239,6 +239,8 @@ router.post('/:provider/load-form/:project_id',function (req, res, next) {
 
         provider.xlsToJson(file, function(xlsToJsonRes){
             if (xlsToJsonRes.status === 'ERROR') {
+                // save the error message for the UI
+                xlsToJsonRes.message = xlsToJsonRes.msg.message;
                 res.status(400).json(xlsToJsonRes);
             }
 

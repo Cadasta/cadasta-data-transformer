@@ -255,7 +255,7 @@ var question_handler = function (node, type_id) {
     var p_id = node.parent_id || null;
 
     var sql = 'INSERT INTO question (field_data_id, type_id, name, label,section_id,group_id) values ' +
-        '(' + field_data_id + ',' + type_id + ',' + pg.sanitize(node.name) + ',' + pg.sanitize(node.label) + ',' + section_id + ',' + p_id + ') RETURNING id';
+        '(' + field_data_id + ',' + (type_id || null) + ',' + pg.sanitize(node.name) + ',' + pg.sanitize(node.label) + ',' + section_id + ',' + p_id + ') RETURNING id';
 
     pg.query(sql, function (err, res) {
         if (err) {
@@ -343,7 +343,12 @@ var get_type_id = function (node) {
         if(err) {
             deferred.reject(err);
         } else {
-            deferred.resolve(res[0].id);
+            if(res.length > 0){
+                deferred.resolve(res[0].id);
+            } else {
+                //return null if no type exists
+                deferred.resolve(null);
+            }
         }
 
     });
